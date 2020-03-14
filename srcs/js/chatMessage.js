@@ -4,6 +4,7 @@ class ChatMessage {
 		const txtUser = this.createTxtUser(user);
 		const txtMsg = this.createTxtMsg(msg)
 		this.elem.appendChild(txtUser);
+		this.elem.innerHTML += " : ";
 		this.elem.appendChild(txtMsg);
 	}
 	createTxtUser(user) {

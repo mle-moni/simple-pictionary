@@ -1,0 +1,33 @@
+.chatZone {
+    width: 30vw;
+    height: 99.5vh;
+	background-color: lemonchiffon;
+	display: flex;
+	flex-direction: column;
+}
+
+.chatZone input {
+	width: 90%;
+	height: 5vh;
+	margin: auto;
+	position: relative;
+	bottom: 0px;
+	font-size: x-large;
+}
+
+.chatZone .chatMessages {
+	height: 90vh;
+	max-height: 90vh;
+	overflow: auto;
+	font-size: x-large;
+}
+
+.chatZone .chatMessages .chatTxtMsg {
+	display: inline;
+	overflow-wrap: break-word;
+}
+
+.chatZone .chatMessages .chatTxtUser {
+	display: inline;
+	overflow-wrap: break-word;
+}

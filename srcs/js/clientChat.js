@@ -19,20 +19,32 @@ class ClientChat {
 		this.game = game;
 		this.messages = [];
 		this.chatInput = document.getElementById("chatInput");
+		this.chatBody = document.getElementById("chatBody");
 		const self = this;
 		this.chatInput.onkeydown = e => {
 			if (e.keyCode === 13) {
 				self.sendMessage(self.chatInput.value);
-
 			}
 		}
 	}
 	sendMessage(text) {
-		if (text.length === 0 || text.length > 40) {
+		if (text.length === 0 || text.length > 100) {
 			this.game.toast.alert("Message too long or empty...");
 			return ;
 		}
 		this.game.socket.emit("newMsg", text);
 		this.chatInput.value = "";
+	}
+	setupEvents() {
+		const self = this;
+		this.game.socket.on("newMsg", (user, msg) => {
+			const newMsg = new ChatMessage(user, msg);
+			self.chatBody.appendChild(newMsg.elem);
+			self.chatBody.scrollTo({
+				top: 9999999,
+				left: 0,
+				behavior: 'smooth'
+			});
+		});
 	}
 }

@@ -1,0 +1,25 @@
+.drawingZone {
+    width: 70vw;
+    margin: auto;
+    background-color: khaki;
+    display: flex;
+    flex-direction: column;
+}
+
+.drawingZone h1 {
+	height: 10vh;
+	display: flex;
+}
+
+.drawingZone h1 span {
+	text-align: center;
+	margin: auto;
+}
+
+.drawingZone canvas {
+    background-color: rgb(243, 243, 243);
+	width: 100%;
+	height: auto;
+	margin: auto;
+	max-height: 90vh;
+}

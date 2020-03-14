@@ -20,6 +20,7 @@ const MongoClient = require('mongodb').MongoClient;
 const url = require("../global/db_url").art;
 const handler = require("./srv_files/handler").handle;
 const connection = require("../global/connection");
+const chat = require("./srv_files/chat");
 
 const Analyse = {
     connnected: 0,
@@ -40,8 +41,13 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
 	io.on('connection', function (socket) {
 		Analyse.connnected++;
 		Analyse.total++;
+
+		socket.userCo = (socket) => {
+			return (socket.hasOwnProperty("psd"));
+		}
 	
 		connection.setupEvents(socket, dbo);
+		chat.setupEvents(socket, dbo);
 	
 		socket.on("connections", (str)=>{
 			socket.emit("log1", Analyse);
