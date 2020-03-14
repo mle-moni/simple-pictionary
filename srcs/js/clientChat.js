@@ -18,10 +18,21 @@ class ClientChat {
 	constructor (game) {
 		this.game = game;
 		this.messages = [];
-		document.getElementById("chatInput").onkeydown = e => {
+		this.chatInput = document.getElementById("chatInput");
+		const self = this;
+		this.chatInput.onkeydown = e => {
 			if (e.keyCode === 13) {
+				self.sendMessage(self.chatInput.value);
 
 			}
 		}
+	}
+	sendMessage(text) {
+		if (text.length === 0 || text.length > 40) {
+			this.game.toast.alert("Message too long or empty...");
+			return ;
+		}
+		this.game.socket.emit("newMsg", text);
+		this.chatInput.value = "";
 	}
 }

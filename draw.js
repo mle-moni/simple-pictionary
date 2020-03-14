@@ -41,17 +41,7 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
 		Analyse.connnected++;
 		Analyse.total++;
 	
-		socket.on("createAcc", (obj)=>{
-			connection.createAccount(obj, socket, dbo);            
-		});
-	
-		socket.on("connectemoistp", (obj, coSettings)=>{
-			connection.connect(obj, coSettings, socket, dbo);
-		});
-	
-		socket.on("testPsd", (psd, num)=>{
-			connection.testPsd(psd, num, socket, dbo);
-		});
+		connection.setupEvents(socket, dbo);
 	
 		socket.on("connections", (str)=>{
 			socket.emit("log1", Analyse);

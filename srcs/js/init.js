@@ -45,7 +45,7 @@ const toast = siiimpleToast;
 		automaticReconnection(connectObj, innerSocket);
 	}, 2000);
 
-	const game = new Pictionary(innerSocket);
+	const game = new Pictionary(innerSocket, toast);
     
 	// sockets events
 	
