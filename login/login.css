@@ -1,0 +1,155 @@
+@font-face {
+	font-family: "Roboto-Bold";
+	 	src: url("../font/Roboto-Bold.ttf");
+}
+@font-face {
+	font-family: "Roboto-Thin";
+	 	src: url("../font/Roboto-Thin.ttf");
+}
+
+html {
+    background-color: #000;
+}
+
+* {
+    user-select: none;
+    font-family: "Roboto-Thin";
+    font-size: 25px;
+}
+
+h1 {
+    text-align: center;
+    margin: auto;
+    font-size: 60px;
+    background-color: rgba(254, 159, 109, 0.3);
+    z-index: 4;
+}
+
+h2 {
+    font-family: "Roboto-Bold";
+}
+
+header {
+    background-color: #FE9F6D;
+    display: flex;
+    font-family: "Roboto-Bold";
+    position: fixed;
+    width: 100%; 
+    z-index: 5;
+    visibility: hidden;
+}
+.angry-animate{
+    -webkit-animation:alert 2s linear 0s 1 normal;
+    -moz-animation:alert 2s linear 0s 1 normal;
+    -ms-animation:alert 2s linear 0s 1 normal;
+    animation:alert 2s linear 0s 1 normal;
+}
+
+@-webkit-keyframes alert {
+    0%{ -webkit-transform: translateX(0); transform: translateX(0); }
+    5%{ -webkit-transform: translateX(-10px); transform: translateX(-10px); }
+    10%{ -webkit-transform: translateX(10px); transform: translateX(10px); }
+    15%{ -webkit-transform: translateX(-10px); transform: translateX(-10px); }
+    20%{ -webkit-transform: translateX(10px); transform: translateX(10px); }
+    25%{ -webkit-transform: translateX(-10px); transform: translateX(-10px); }
+    30%{ -webkit-transform: translateX(10px); transform: translateX(10px); }
+    35%{ -webkit-transform: translateX(-10px); transform: translateX(-10px); }
+    40%{ -webkit-transform: translateX(10px); transform: translateX(10px); }
+    45%{ -webkit-transform: translateX(-10px); transform: translateX(-10px); }
+    50%{ -webkit-transform: translateX(0); transform: translateX(0); }
+}
+
+@keyframes alert {
+    0%{ -ms-transform: translateX(0); transform: translateX(0); }
+    5%{ -ms-transform: translateX(-10px); transform: translateX(-10px); }
+    10%{ -ms-transform: translateX(10px); transform: translateX(10px); }
+    15%{ -ms-transform: translateX(-10px); transform: translateX(-10px); }
+    20%{ -ms-transform: translateX(10px); transform: translateX(10px); }
+    25%{ -ms-transform: translateX(-10px); transform: translateX(-10px); }
+    30%{ -ms-transform: translateX(10px); transform: translateX(10px); }
+    35%{ -ms-transform: translateX(-10px); transform: translateX(-10px); }
+    40%{ -ms-transform: translateX(10px); transform: translateX(10px); }
+    45%{ -ms-transform: translateX(-10px); transform: translateX(-10px); }
+    50%{ -ms-transform: translateX(0); transform: translateX(0); }
+}
+
+#main {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+h2 {
+    margin: auto;
+}
+#boite, #postade, .cont-basic {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    align-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.96);
+    padding: 40px;
+    border-radius: 100px;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    z-index: 2;
+    position: relative;
+    top: 60px;
+}
+span {
+    border: solid;
+    border-radius: 100px;
+    -moz-border-radius: 100px;
+    -webkit-border-radius: 100px;
+    border-width: 2px;
+    width: 18px;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+}
+.but {
+    margin: auto;
+}
+#create, #confirm {
+    display: none;
+}
+#create, #connect, .classic {
+    background-color: #7a777780;
+    border: 1px solid #000;
+    padding: 8px;
+    border-radius: 50px;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    transition: all 1s;
+    cursor: pointer;
+}
+#create:hover, #connect:hover, .classic:hover {
+    border-radius: 0px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+}
+#noacc, #alacc {
+    text-align: center;
+}
+u {
+    cursor: pointer;
+    text-decoration: underline;
+}
+u:hover {
+    font-style: italic;
+}
+#post, .infobulle {
+    display: none;
+}
+.disabled {
+    display: none;
+}
+
+.classic {
+    padding: 15px;
+}
+
+#result {
+    color: red;
+    text-align: center;
+}

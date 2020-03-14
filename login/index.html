@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Connexion</title>
+    <link rel="icon" href="../img/basic-icon.png">
+    <link rel="stylesheet" type="text/css" href="login/login.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script>const socket = io.connect(location.origin, {secure: true, rejectUnauthorized: true});</script>
+</head>
+	<body>
+        <div id="post" style="display: none;">Poster du contenu</div>
+		<article id="main">
+            <br>
+            
+            <form id="boite">
+                <h2>Authentification</h2><br>
+                <div>
+                    <input class="inputs" style="height: 30px; font-family: 'Roboto-Thin'; padding:5px; font-size:16px; border-width:4px; border-bottom-color: #BCC4CA; border-right-color: #BCC4CA; border-left-color: white;border-top-color: white; border-radius: 10px;"
+                    size="20" id="i1" type="text" placeholder="Nom d'utilisateur" title="Entre 1 et 30 charactères." onblur="test('i1')">
+                    <span class="infobulle" id="a1">i</span><br><br>
+                </div>
+                
+                <div>
+                    <input class="inputs" style="height: 30px; font-family: 'Roboto-Thin'; padding:5px; font-size:16px; border-width:4px; border-bottom-color: #BCC4CA; border-right-color: #BCC4CA; border-left-color: white;border-top-color: white; border-radius: 10px;"
+                    size="20" id="i2" type="password" placeholder="Mot de passe" title="À partir de 6 charactères." onblur="test('i2')">
+                    <span class="infobulle" id="a2"> i </span><br><br>
+                </div>
+                <div id="confirm">
+                    <input class="inputs" style="height: 30px; font-family: 'Roboto-Thin'; padding:5px; font-size:16px; border-width:4px; border-bottom-color: #BCC4CA; border-right-color: #BCC4CA; border-left-color: white;border-top-color: white; border-radius: 10px;" 
+                    size="20" id="i3" type="password" placeholder="Confirmer le mot de passe" onblur="test('i3')">
+                    <span class="infobulle" id="a3">i</span><br><br>
+                </div>
+                <div id="check" style="position: relative; bottom: 10px;">
+                        <input type="checkbox" id="keepCo" name="keepCo">
+                        <label for="keepCo">Rester connecté</label>
+                    </div>
+                    
+                    <a id="create" class="but" onclick="create()" title="Créer son compte">Créer un compte</a>
+                    <a id="connect" class="but" onclick="seconnecter()" title="Se connecter">Se connecter</a>
+                    <br>
+                    <div id="noacc">
+                        Pas encore de compte ? C'est <u onclick="toregister()">ici</u>.
+                    </div>
+                <div id="alacc" style="display: none;">
+                        Déjà un compte ? C'est <u onclick="tosignin()">ici</u>.
+                    </div>
+                    <br>
+                    <div id="result">
+                        
+                    </div>
+                </form>
+                
+                <span id="keur" style="display: none;"></span>
+                
+            </article>
+            <canvas id="canvas"></canvas>
+            
+            <!-- 
+                COLOR SCHEME :
+                #FFE8DC
+			#FE9F6D
+			#FC600A
+			#9D3802
+			#341809
+		-->
+        
+        
+        <!-- SCRIPTS START  -->
+        <script type="text/javascript" src="libs/hashes.js"></script>
+        <script type="text/javascript">
+
+
+
+let ilveutcreer = false;
+
+function seconnecter() {
+    document.getElementById("connect").classList.remove("angry-animate");
+    let ndc = document.getElementById("i1").value;
+    let mdp = document.getElementById("i2").value;
+    if (ndc !== "" && mdp !== "") {
+        socket.emit("connectemoistp", {
+            psd: ndc,
+            passwd: new Hashes.SHA256().b64(mdp)
+        });
+    } else {
+        document.getElementById("result").innerHTML = "Veuillez remplir correctement les champs.";
+        document.getElementById("connect").classList.add("angry-animate");
+    }
+        }
+        function create() {
+            document.getElementById("create").classList.remove("angry-animate");
+            setTimeout(()=>{
+                let ndc = document.getElementById("i1").value;
+                let mdp = document.getElementById("i2").value;
+                let mdp2 = document.getElementById("i3").value;
+
+                if (ndc !== "" && mdp !== "" && mdp2 !== "") {
+                    if (mdp === mdp2) {
+                        document.getElementById("result").innerHTML = "Demande en cours de traitement.";
+                        socket.emit("createAcc", {
+                            psd: ndc,
+                            passwd: new Hashes.SHA256().b64(mdp)
+                        });
+                    } else {
+                        document.getElementById("result").innerHTML = "Les 2 champs de mots de passe doivent être identique.";
+                        document.getElementById("create").classList.add("angry-animate");
+                    }
+                } else {
+                    document.getElementById("result").innerHTML = "Veuillez remplir correctement les champs.";
+                    document.getElementById("create").classList.add("angry-animate");
+                }
+            },1);
+            
+        }
+        function toregister() {
+            document.getElementById("noacc").style.display = "none";
+            document.getElementById("alacc").style.display = "block";
+            document.getElementById("confirm").style.display = "block";
+            document.getElementById("create").style.display = "block";
+            document.getElementById("connect").style.display = "none";
+            document.getElementById("check").style.display = "none";
+            ilveutcreer = true;
+            for (let i = 0; i < document.getElementsByClassName("infobulle").length; i++) {
+                document.getElementsByClassName("infobulle")[i].style.display = "inline-block";
+            }
+        }
+
+        function tosignin() {
+            document.getElementById("noacc").style.display = "block";
+            document.getElementById("alacc").style.display = "none";
+            document.getElementById("confirm").style.display = "none";
+            document.getElementById("create").style.display = "none";
+            document.getElementById("connect").style.display = "block";
+            document.getElementById("check").style.display = "block";
+            ilveutcreer = false;
+            for (let i = 0; i < document.getElementsByClassName("infobulle").length; i++) {
+                document.getElementsByClassName("infobulle")[i].style.display = "none";
+            }
+        }
+
+        function test(elId) {
+            if (ilveutcreer) {
+                if (document.getElementById(elId).value === "") {
+                    document.getElementById("a"+elId.charAt(1)).style.borderColor = "red";
+                    document.getElementById("a"+elId.charAt(1)).style.color = "red";
+                } else {
+                    if (elId === "i1") {
+                        // test que le pseudo existe
+                        socket.emit("testPsd", document.getElementById(elId).value, parseInt(elId.charAt(1)));
+                    } else {
+                        if (elId === "i3") {
+                            if (document.getElementById("i2").value === document.getElementById("i3").value) {
+                                document.getElementById("a3").style.borderColor = "green";
+                                document.getElementById("a3").style.color = "green";
+                                document.getElementById("a2").style.borderColor = "green";
+                                document.getElementById("a2").style.color = "green";
+                            } else {
+                                document.getElementById("a3").style.borderColor = "red";
+                                document.getElementById("a3").style.color = "red";
+                                document.getElementById("a2").style.borderColor = "red";
+                                document.getElementById("a2").style.color = "red";
+                                document.getElementById("result").innerHTML = "Les mots de passes doivent êtres identiques dans les 2 champs."
+                            }
+                        } else {
+                            document.getElementById("a"+elId.charAt(1)).style.borderColor = "green";
+                            document.getElementById("a"+elId.charAt(1)).style.color = "green";
+                        }
+                    }
+                }
+            }
+        }
+
+        socket.on("testPsd", (bol,num)=>{
+            if (bol) {
+                document.getElementById("a"+num).style.borderColor = "green";
+                document.getElementById("a"+num).style.color = "green";
+            } else {
+                document.getElementById("a"+num).style.borderColor = "red";
+                document.getElementById("a"+num).style.color = "red";
+                document.getElementById("result").innerHTML = "Ce pseudo est déjà utilisé."
+            }
+        });
+
+        // new Hashes.SHA256().b64('text_to_hash') // client side hash
+
+        socket.on("log", (arr, tosign)=>{
+            for (let i = 0; i < arr.length; i++) {
+                document.getElementById(arr[i].id).innerHTML = arr[i].msg;
+                if (tosign !== undefined) {
+                    tosignin();
+                }
+            }
+        });
+
+        socket.on("fail", (str)=>{
+            document.getElementById(str).classList.add("angry-animate");
+        });
+        socket.on("succes", (obj)=>{
+            sessionStorage.setItem('psd', obj.psd);
+            sessionStorage.setItem('passwd', obj.passwd);
+            if (document.getElementById("keepCo").checked) {
+                localStorage.setItem('psd', obj.psd);
+                localStorage.setItem('passwd', obj.passwd);
+            }
+            document.getElementById("i1").value = "";
+            document.getElementById("i2").value = "";
+            document.getElementById("i3").value = "";
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("boite").style.display = "none";
+
+            // changer de page
+            location.replace(sessionStorage.getItem("goTo"));
+        });
+
+        window.onload = function() {
+            const connectObj = {
+                psd: sessionStorage.getItem('psd'),
+                passwd: sessionStorage.getItem('passwd')
+            };
+            if (connectObj.psd !== null && connectObj.passwd !== null) {
+                socket.emit("connectemoistp", connectObj);
+            }
+        }
+
+        let fileContenu;
+        // Événement "dragenter" et "dragover"
+
+        document.getElementById("i2").addEventListener("keydown", e=>{
+            if (e.keyCode === 13) {
+                if (ilveutcreer) {
+                    create();
+                } else {
+                    seconnecter();
+                }
+            }
+        });
+        document.getElementById("i1").addEventListener("keydown", e=>{
+            if (e.keyCode === 13) {
+                if (ilveutcreer) {
+                    create();
+                } else {
+                    seconnecter();
+                }
+            }
+        });
+        document.getElementById("i3").addEventListener("keydown", e=>{
+            if (e.keyCode === 13) {
+                if (ilveutcreer) {
+                    create();
+                }
+            }
+        });
+    </script>
+    <script src="../login/anim_login.js"></script>
+</body>
+
+</html>
