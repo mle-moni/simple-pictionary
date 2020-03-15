@@ -28,8 +28,10 @@ class ClientChat {
 		}
 	}
 	sendMessage(text) {
-		if (text.length === 0 || text.length > 100) {
-			this.game.toast.alert("Message too long or empty...");
+		if (text.length === 0) {
+			return ;
+		} else if (text.length > 100) {
+			this.game.toast.alert("Message too long...");
 			return ;
 		}
 		this.game.socket.emit("newMsg", text);

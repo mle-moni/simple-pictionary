@@ -17,7 +17,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 .drawingZone {
     width: 70vw;
     margin: auto;
-    background-color: khaki;
+    background-color: rgb(194, 170, 140);
     display: flex;
     flex-direction: column;
 }
@@ -25,6 +25,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 .drawingZone h1 {
 	height: 10vh;
 	display: flex;
+	font-family: 'Inconsolata', monospace;
 }
 
 .drawingZone h1 span {
