@@ -17,6 +17,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 @import "drawingZone.css";
 @import "chatZone.css";
 @import "niceScrollbar.css";
+@import "wordChooser.css";
 
 * {
     padding: 0px;
@@ -31,4 +32,21 @@ html {
 body {
     height: inherit;
     display: flex;
+}
+
+.page {
+	display: flex;
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgb(112, 108, 97);
+	transition: all 1s;
+	transform: translate3d(0, 0, 0);
+    transition: all 0.3s ease-in-out;
+}
+
+.notvisible {
+	transform: translateX(-100vw);
 }

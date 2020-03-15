@@ -31,16 +31,19 @@ class Room {
 		this.users = [];
 		this.chat = [];
 		this.users.push(socket);
+		this.word = "";
 		rooms[this.namespace] = this;
 		socket.join(this.namespace);
-		socket.emit("choseWord", this.namespace);
-		socket.emit("success!", `Room succesfully created`);
+		socket.emit("chooseWord", this.namespace);
+		socket.emit("success!", `Room successfully created`);
 	}
 	kick(psd) {
 		for (let i = 0; i < this.users.length; i++) {
 			if (this.users[i].psd === psd) {
 				if (this.master === psd) {
-					this.master = this.nextMaster();
+					this.nextMaster();
+					chat.newMsg(this.users[i], "");
+					this.word = "";
 				}
 				this.users.splice(i, 1);
 				break ;
@@ -53,7 +56,10 @@ class Room {
 	nextMaster() {
 		for (let i = 0; i < this.users.length; i++) {
 			if (this.users[i].psd === this.master) {
-				this.master = this.users[(i + 1) % this.users.length].psd;
+				const masterSocket = this.users[(i + 1) % this.users.length];
+				this.master = masterSocket.psd;
+				masterSocket.emit("chooseWord");
+				break ;
 			}
 		}
 	}
@@ -71,7 +77,7 @@ class Room {
 			this.scores[socket.psd] = 0;
 		}
 		socket.emit("getChat", this.chat);
-		socket.emit("success!", `Succesfully joined ${this.creatorPsd}'s room`);
+		socket.emit("success!", `Successfully joined ${this.creatorPsd}'s room`);
 	}
 }
 
@@ -92,4 +98,27 @@ function setupEvents(socket, dbo) {
 			socket.gameRoom = new Room(socket, roomId);
 		}
 	});
+
+	socket.on("chosenWord", word => {
+		if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
+			socket.emit("error!", "Something went wrong!");
+			return ;
+		}
+		if (isOk(word, socket)) {
+			socket.gameRoom.word = word;
+			socket.emit("wordOK");
+		}
+	});
+}
+
+function isOk(word, socket) {
+	let ok = true;
+	if (word === "") {
+		ok = false;
+	}
+	if (socket.psd !== socket.gameRoom.master) {
+		ok = false;
+		socket.emit("error!", `You (${socket.psd}) are not the master (${socket.gameRoom.master})`);
+	}
+	return (ok);
 }

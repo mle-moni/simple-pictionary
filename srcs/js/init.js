@@ -101,7 +101,6 @@ const toast = siiimpleToast;
 		console.log("Ready, app is now usable");
 		if (location.search !== "") {
 			const room = location.search.slice(1);
-			console.log(`We will try to join ${room}`);
 			socket.emit("joinRoom", room);
 		}
 	});

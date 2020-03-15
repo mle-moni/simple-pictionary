@@ -15,14 +15,33 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 */
 
 module.exports = {
-    setupEvents
+	setupEvents,
+	newMsg
 };
 
 function newMsg(socket, msg) {
     if (socket.hasOwnProperty("gameRoom")) {
-		socket.to(socket.gameRoom.namespace).emit("newMsg", socket.psd, msg);
-		socket.gameRoom.chat.push({psd: socket.psd, msg});
-		socket.emit("newMsg", socket.psd, msg);
+		if (msg === "") {
+			msg = `${socket.psd} left, the word was ${socket.gameRoom.word || "not defined yet"}`;
+			socket.to(socket.gameRoom.namespace).emit("newMsg", "BOT", msg);
+			socket.gameRoom.chat.push({psd: "BOT", msg});
+		} else {
+			if (msg === socket.gameRoom.word) {
+				if (socket.psd === socket.gameRoom.master) {
+					socket.emit("error!", "????");
+					return ;
+				}
+				const msgToStore = {psd: "BOT", msg: `${socket.psd} found the word!`};
+				socket.to(socket.gameRoom.namespace).emit("newMsg", msgToStore.psd, msgToStore.msg);
+				socket.gameRoom.chat.push(msgToStore);
+				socket.gameRoom.nextMaster();
+				socket.emit("newMsg", msgToStore.psd, msgToStore.msg);
+				return ;
+			}
+			socket.to(socket.gameRoom.namespace).emit("newMsg", socket.psd, msg);
+			socket.gameRoom.chat.push({psd: socket.psd, msg});
+			socket.emit("newMsg", socket.psd, msg);
+		}
 	} else {
 		socket.emit("error!", "You need to be in a game in order to use the chat");
 	}
