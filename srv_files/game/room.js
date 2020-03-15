@@ -14,7 +14,6 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
    limitations under the License.
 */
 
-const Hashes = require('jshashes');
 const chat = require("../chat");
 const rooms = {};
 
@@ -25,11 +24,7 @@ module.exports = {
 
 class Room {
 	constructor (socket, namespace="") {
-		if (namespace === "") {
-			this.namespace = this.namespaceGen(socket.psd);
-		} else {
-			this.namespace = namespace;
-		}
+		this.namespace = namespace;
 		this.creatorPsd = socket.psd;
 		this.master = socket.psd;
 		this.scores = {}; // indexed like this: this.scores[socket.psd] = score;
@@ -40,11 +35,6 @@ class Room {
 		socket.join(this.namespace);
 		socket.emit("choseWord", this.namespace);
 		socket.emit("success!", `Room succesfully created`);
-	}
-	namespaceGen(psd) {
-		const time = new Hashes.SHA256().b64(Date.now().toString());
-		const namespace = `${time}_${psd}`;
-		return (namespace);
 	}
 	kick(psd) {
 		for (let i = 0; i < this.users.length; i++) {
@@ -77,6 +67,9 @@ class Room {
 		socket.join(this.namespace);
 		socket.gameRoom = this;
 		this.users.push(socket);
+		if (!this.scores.hasOwnProperty(socket.psd)) {
+			this.scores[socket.psd] = 0;
+		}
 		socket.emit("getChat", this.chat);
 		socket.emit("success!", `Succesfully joined ${this.creatorPsd}'s room`);
 	}
@@ -84,16 +77,6 @@ class Room {
 
 function setupEvents(socket, dbo) {
 	chat.setupEvents(socket, dbo);
-	socket.on("createRoom", () => {
-		if (!socket.hasOwnProperty("psd")) {
-			return ;
-		}
-		if (socket.hasOwnProperty("gameRoom")) {
-			socket.emit("error!", "You already are in a game room!");
-			return ;
-		}
-		socket.gameRoom = new Room(socket);
-	});
 
 	socket.on("joinRoom", roomId => {
 		if (!socket.hasOwnProperty("psd")) {
