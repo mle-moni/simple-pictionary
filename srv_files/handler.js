@@ -40,8 +40,7 @@ const mimeTypes = {
 };
 
 function handler(request, response) {
-    let filePath = '.' + request.url;
-
+	let filePath = `.${request.url}`.split("?")[0];
     let extname = String(path.extname(filePath)).toLowerCase();
     if (extname === "") {
         extname = ".html";

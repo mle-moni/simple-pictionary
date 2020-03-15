@@ -37,16 +37,24 @@ class ClientChat {
 		this.game.socket.emit("newMsg", text);
 		this.chatInput.value = "";
 	}
+	appendMessage(obj) {
+		const newMsg = new ChatMessage(obj.psd, obj.msg);
+		self.chatBody.appendChild(newMsg.elem);
+		self.chatBody.scrollTo({
+			top: 9999999,
+			left: 0,
+			behavior: 'smooth'
+		});
+	}
 	setupEvents() {
 		const self = this;
 		this.game.socket.on("newMsg", (user, msg) => {
-			const newMsg = new ChatMessage(user, msg);
-			self.chatBody.appendChild(newMsg.elem);
-			self.chatBody.scrollTo({
-				top: 9999999,
-				left: 0,
-				behavior: 'smooth'
-			});
+			self.appendMessage({psd: user, msg});
+		});
+		this.game.socket.on("getChat", chatArray => {
+			for (let i = 0; i < chatArray.length; i++) {
+				self.appendMessage(chatArray[i]);
+			}
 		});
 	}
 }

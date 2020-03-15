@@ -15,14 +15,17 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 */
 
 module.exports = {
-    setupEvents: setupEvents
+    setupEvents
 };
 
 function newMsg(socket, msg) {
-    let ok = true;
-
-    socket.broadcast.emit("newMsg", socket.psd, msg);
-	socket.emit("newMsg", socket.psd, msg);
+    if (socket.hasOwnProperty("gameRoom")) {
+		socket.to(socket.gameRoom.namespace).emit("newMsg", socket.psd, msg);
+		socket.gameRoom.chat.push({psd: socket.psd, msg});
+		socket.emit("newMsg", socket.psd, msg);
+	} else {
+		socket.emit("error!", "You need to be in a game in order to use the chat");
+	}
 }
 
 function setupEvents(socket, dbo) {

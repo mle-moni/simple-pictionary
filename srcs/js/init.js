@@ -21,7 +21,7 @@ const toast = siiimpleToast;
 		if (connectObj.psd !== null && connectObj.passwd !== null) {
 			innerSocket.emit("connectemoistp", connectObj, "lazy");
 		} else {
-			sessionStorage.setItem("goTo", location.pathname);
+			sessionStorage.setItem("goTo", location.pathname+location.search);
 			location.replace("/login");
 		}
 	}
@@ -53,14 +53,14 @@ const toast = siiimpleToast;
 	window.socket = innerSocket;
 	
 	innerSocket.on("logAndComeBack", ()=>{
-		sessionStorage.setItem("goTo", location.pathname);
+		sessionStorage.setItem("goTo", location.pathname+location.search);
 		location.replace("/login");
 	});
 
 	innerSocket.on("deco", ()=>{
 		sessionStorage.clear();
 		localStorage.clear();
-		sessionStorage.setItem("goTo", location.pathname);
+		sessionStorage.setItem("goTo", location.pathname+location.search);
 	    location.replace("/login");
 	});
 
@@ -99,14 +99,15 @@ const toast = siiimpleToast;
 		appReady = true;
 		toast.success("Connected");
 		console.log("Ready, app is now usable");
-		setTimeout(()=>{
-            this.socket.emit("getUnread");
-        }, 200);
+		if (location.search !== "") {
+			const room = location.search.slice(1);
+			console.log(`We will try to join ${room}`);
+			socket.emit("joinRoom", room);
+		}
 	});
 
 	innerSocket.on("disconnect", ()=>{
 		appReady = false;
-		document.getElementById("conv_list").innerHTML = "";
 		toast.alert("Connection lost");
 		console.error("Disconnected, app is no longer usable");
 		setTimeout(()=>{
