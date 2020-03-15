@@ -21,6 +21,7 @@ const url = require("../global/db_url").art;
 const handler = require("./srv_files/handler").handle;
 const connection = require("../global/connection");
 const chat = require("./srv_files/chat");
+const gameRooms = require("./srv_files/game/room");
 
 const Analyse = {
     connnected: 0,
@@ -48,7 +49,8 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
 	
 		connection.setupEvents(socket, dbo);
 		chat.setupEvents(socket, dbo);
-	
+		gameRooms.setupEvents(socket, dbo);
+
 		socket.on("connections", (str)=>{
 			socket.emit("log1", Analyse);
 		});
@@ -56,10 +58,10 @@ MongoClient.connect(url, { useUnifiedTopology: true }, function(err, db) {
 		socket.on("MAJ", txt=> {
 			if (socket.psd == "Redz") {
 				socket.broadcast.emit("MAJ", txt);
+				socket.emit("MAJ", txt);
 			} else {
 				socket.emit("MAJ", "Bien pris qui croyais prendre x)");
 			}
-			socket.emit("MAJ", txt);
 		});
 	
 		socket.on("disconnect", ()=>{

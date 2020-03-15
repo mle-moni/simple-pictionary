@@ -38,8 +38,8 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 	max-height: 90vh;
 	overflow: auto;
 	font-size: x-large;
-	padding-left: 5px;
-	padding-right: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 .chatZone .chatMessages .chatTxtMsg {
