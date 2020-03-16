@@ -44,6 +44,9 @@ class DrawController {
 			self.pen = pen;
 			self.drawPoint(x, y);
 		});
+		this.game.socket.on("clear", () => {
+			self.clear();
+		});
 		this.setupWordChooser();
 		this.settupHover();
 		this.settupDrawingEvents();

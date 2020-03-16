@@ -109,6 +109,8 @@ function setupEvents(socket, dbo) {
 		if (isOk(word, socket)) {
 			socket.gameRoom.word = word;
 			socket.emit("wordOK", word);
+			socket.emit("clear");
+			socket.to(socket.gameRoom.namespace).emit("clear");
 		}
 	});
 }
