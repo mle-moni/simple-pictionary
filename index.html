@@ -50,6 +50,18 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 			<input type="text" id="chooseInput">
 		</div>
 	</div>
+	<div class="page notvisible" id="goToURL">
+		<div class="wordChooser">
+			<h4>
+				<span>
+					Create or join a game room<br><br><h6>You can share it with your friends by copying the URL.<br><br>
+					<h6>If you are alone today, you can try to join the "global" room, maybe other players will be there</h6></h6>
+				</span>
+			</h4>
+			<input type="text" id="chooseInput" placeholder="Type room name and press enter"
+			onkeydown="if(event.keyCode == 13)location.replace(`?${this.value}`)" >
+		</div>
+	</div>
 	<script src="srcs/js/chatMessage.js"></script>
 	<script src="srcs/js/clientChat.js"></script>
 	<script src="srcs/js/drawController.js"></script>

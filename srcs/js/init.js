@@ -102,6 +102,8 @@ const toast = siiimpleToast;
 		if (location.search !== "") {
 			const room = location.search.slice(1);
 			socket.emit("joinRoom", room);
+		} else {
+			game.showPage(document.getElementById("goToURL"));
 		}
 	});
 

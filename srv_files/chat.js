@@ -35,6 +35,7 @@ function newMsg(socket, msg) {
 				socket.to(socket.gameRoom.namespace).emit("newMsg", msgToStore.psd, msgToStore.msg);
 				socket.gameRoom.chat.push(msgToStore);
 				socket.gameRoom.nextMaster();
+				socket.gameRoom.word = "";
 				socket.emit("newMsg", msgToStore.psd, msgToStore.msg);
 				return ;
 			}
