@@ -21,7 +21,6 @@ class Pictionary {
 		this.chat = new ClientChat(this);
 		this.controller = new DrawController(this);
 		this.canvas = document.getElementById("canvas");
-		this.ctx = this.canvas.getContext("2d");
 		this.setupEvents();
 	}
 	setupEvents() {
