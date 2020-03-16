@@ -36,6 +36,14 @@ class DrawController {
 			this.game.hidePage(document.getElementById("chooseWord"));
 			document.getElementById("chooseInput").value = "";
 		});
+		this.game.socket.on("drawLine", (x, y, pen) => {
+			self.pen = pen;
+			self.drawLine(x, y);
+		});
+		this.game.socket.on("drawPoint", (x, y, pen) => {
+			self.pen = pen;
+			self.drawPoint(x, y);
+		});
 		this.setupWordChooser();
 		this.settupHover();
 		this.settupDrawingEvents();
@@ -83,11 +91,13 @@ class DrawController {
 		}
 		this.game.canvas.onmousemove = e => {
 			if (self.drawing) {
-				self.drawLine(e.offsetX, e.offsetY);
+				// self.drawLine(e.offsetX, e.offsetY);
+				self.game.socket.emit("drawLine", e.offsetX, e.offsetY, self.pen);
 			}
 		}
 		this.game.canvas.onclick = e => {
-			self.drawPoint(e.offsetX, e.offsetY);
+			// self.drawPoint(e.offsetX, e.offsetY);
+			self.game.socket.emit("drawPoint", e.offsetX, e.offsetY, self.pen);
 		}
 	}
 	drawPoint(offsetX, offsetY) {

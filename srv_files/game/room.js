@@ -15,6 +15,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 */
 
 const chat = require("../chat");
+const draw = require("./draw");
 const rooms = {};
 
 module.exports = {
@@ -83,6 +84,7 @@ class Room {
 
 function setupEvents(socket, dbo) {
 	chat.setupEvents(socket, dbo);
+	draw.setupEvents(socket, dbo);
 
 	socket.on("joinRoom", roomId => {
 		if (!socket.hasOwnProperty("psd")) {
