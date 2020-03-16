@@ -91,16 +91,16 @@ class DrawController {
 		}
 		this.game.canvas.onmousemove = e => {
 			if (self.drawing) {
-				// self.drawLine(e.offsetX, e.offsetY);
-				self.game.socket.emit("drawPoint", e.offsetX, e.offsetY, self.pen);
+				const target = self.getTargetCoord(e.offsetX, e.offsetY);
+				self.game.socket.emit("drawLine", target.x, target.y, self.pen);
 			}
 		}
 		this.game.canvas.onclick = e => {
-			// self.drawPoint(e.offsetX, e.offsetY);
-			self.game.socket.emit("drawPoint", e.offsetX, e.offsetY, self.pen);
+			const target = self.getTargetCoord(e.offsetX, e.offsetY);
+			self.game.socket.emit("drawPoint", target.x, target.y, self.pen);
 		}
 	}
-	drawPoint(offsetX, offsetY) {
+	getTargetCoord(offsetX, offsetY) {
 		const canvas = this.game.canvas;
 		const target = {
 			x: offsetX / canvas.offsetWidth * canvas.width,
@@ -108,22 +108,16 @@ class DrawController {
 		};
 		target.x += (this.pen.size / 2);
 		target.y += (this.pen.size / 2);
-
+		return (target);
+	}
+	drawPoint(posX, posY) {
 		this.ctx.fillStyle = this.pen.color;
 		this.ctx.beginPath();
-		this.ctx.arc(target.x, target.y, this.pen.size / 2, 0, Math.PI * 2);
+		this.ctx.arc(posX, posY, this.pen.size / 2, 0, Math.PI * 2);
 		this.ctx.fill();
 	}
-	drawLine(offsetX, offsetY) {
-		const canvas = this.game.canvas;
-		const target = {
-			x: offsetX / canvas.offsetWidth * canvas.width,
-			y: offsetY / canvas.offsetHeight * canvas.height
-		};
-		target.x += (this.pen.size / 2);
-		target.y += (this.pen.size / 2);
-
-		this.pen.pos.push(target);
+	drawLine(posX, posY) {
+		this.pen.pos.push({x: posX, y: posY});
 		if (this.pen.pos.length === 1) {
 			return ;
 		}

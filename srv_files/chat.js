@@ -51,7 +51,6 @@ function newMsg(socket, msg) {
 function setupEvents(socket, dbo) {
 	socket.on("newMsg", text => {
 		if (socket.hasOwnProperty("psd") && text.length !== 0 && text.length <= 100) {
-			// verify is msg === socket.game.winCondition before sending
 			newMsg(socket, text);
 		}
 	});
