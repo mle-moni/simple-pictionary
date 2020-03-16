@@ -92,7 +92,7 @@ class DrawController {
 		this.game.canvas.onmousemove = e => {
 			if (self.drawing) {
 				// self.drawLine(e.offsetX, e.offsetY);
-				self.game.socket.emit("drawLine", e.offsetX, e.offsetY, self.pen);
+				self.game.socket.emit("drawPoint", e.offsetX, e.offsetY, self.pen);
 			}
 		}
 		this.game.canvas.onclick = e => {
