@@ -17,10 +17,10 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 class DrawController {
 	constructor (game) {
 		this.game = game;
+		this.tools = document.getElementById("toolsPanel");
 		this.hover = false;
 		this.drawing = false;
 		setTimeout(()=>{
-			console.log(this.game)
 			this.ctx = this.game.canvas.getContext("2d");
 		}, 0);
 		this.pen = {
@@ -50,6 +50,7 @@ class DrawController {
 		this.setupWordChooser();
 		this.settupHover();
 		this.settupDrawingEvents();
+		this.settupToolsEvents();
 	}
 	setupWordChooser() {
 		const input = document.getElementById("chooseInput");
@@ -81,6 +82,16 @@ class DrawController {
 			}
 			if (e.buttons === 1) { // left click
 				self.drawing = true;
+			} else if (e.buttons === 2) {
+				if (new Array(self.tools.classList).join("").match("transparent")) {
+					self.tools.style.left = e.clientX + "px";
+					self.tools.style.top = e.clientY + "px";
+					self.tools.classList.remove("transparent");
+				} else {
+					self.tools.style.left = -200 + "px";
+					self.tools.style.top = -200 + "px";
+					self.tools.classList.add("transparent");
+				}
 			}
 		}
 		document.body.onmouseup = e => {
@@ -134,5 +145,18 @@ class DrawController {
 	}
 	clear() {
 		this.ctx.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+	}
+	settupToolsEvents() {
+		const self = this;
+		const colors = document.getElementById("colors").getElementsByClassName("color");
+		for (let color of colors) {
+			color.style.backgroundColor = color.getAttribute("color");
+			color.onclick = e => {
+				self.pen.color = color.getAttribute("color");
+				self.tools.style.left = -200 + "px";
+				self.tools.style.top = -200 + "px";
+				self.tools.classList.add("transparent");
+			}
+		}
 	}
 }
