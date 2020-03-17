@@ -51,6 +51,7 @@ const toast = siiimpleToast;
 	
 	// DEBUG MODE ONLY, A RETIRER !!!
 	window.socket = innerSocket;
+	window.game = game;
 	
 	innerSocket.on("logAndComeBack", ()=>{
 		sessionStorage.setItem("goTo", location.pathname+location.search);
