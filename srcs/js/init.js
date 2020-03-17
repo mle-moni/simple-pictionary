@@ -104,6 +104,7 @@ const toast = siiimpleToast;
 			socket.emit("joinRoom", room);
 		} else {
 			game.showPage(document.getElementById("goToURL"));
+			document.getElementById("goToUrlInput").focus();
 		}
 	});
 

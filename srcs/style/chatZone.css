@@ -26,11 +26,11 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 
 .chatZone input {
 	width: 90%;
-	height: 5vh;
 	margin: auto;
 	position: relative;
 	bottom: 0px;
 	font-size: x-large;
+	padding: 10px;
 }
 
 .chatZone .chatMessages {
