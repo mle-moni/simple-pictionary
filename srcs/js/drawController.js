@@ -36,7 +36,7 @@ class DrawController {
 		this.pen = {
 			color: "black",
 			size: 5,
-			actions: [{type: "stop", color: "", x: 0, y: 0, id: 0}]
+			actions: [{type: "stop", color: "", size: 0, x: 0, y: 0, id: 0}]
 		};
 		this.actionsCount = 0;
 	}
@@ -50,14 +50,19 @@ class DrawController {
 		this.game.socket.on("drawLine", (x, y, pen) => {
 			self.pen = pen;
 			const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
-			self.pen.actions.push({type: "line", color: pen.color, x, y, id});
+			self.pen.actions.push({type: "line", color: pen.color, size: pen.size, x, y, id});
+			if (self.pen.actions.length > 30) {
+				self.pen.actions.shift();
+			}
 			self.tryToDraw();
 		});
 		this.game.socket.on("drawPoint", (x, y, pen) => {
 			self.pen = pen;
-			console.log(pen.actions)
 			const id = pen.actions[pen.actions.length - 1].id + 1;
-			self.pen.actions.push({type: "point", color: pen.color, x, y, id});
+			self.pen.actions.push({type: "point", color: pen.color, size: pen.size, x, y, id});
+			if (self.pen.actions.length > 30) {
+				self.pen.actions.splice(0, 2);
+			}
 			self.tryToDraw();
 		});
 		this.game.socket.on("clear", () => {
@@ -91,7 +96,7 @@ class DrawController {
 			const pen = self.pen;
 			if (pen.actions[pen.actions.length - 1].type !== "stop") {
 				const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
-				self.pen.actions.push({type: "stop", color: "", x: 0, y: 0, id});
+				self.pen.actions.push({type: "stop", color: "", size: 0, x: 0, y: 0, id});
 			}
 		}
 	}
@@ -114,8 +119,10 @@ class DrawController {
 		document.body.onmouseup = e => {
 			if (e.which === 1) { // left click release
 				self.drawing = false;
-				const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
-				self.pen.actions.push({type: "stop", color: "", x: 0, y: 0, id});
+				if (self.pen.actions[self.pen.actions.length - 1].type !== "stop") {
+					const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
+					self.pen.actions.push({type: "stop", color: "", size: 0, x: 0, y: 0, id});
+				}
 			}
 		}
 		this.game.canvas.oncontextmenu = () => {
@@ -142,23 +149,64 @@ class DrawController {
 		target.y += (this.pen.size / 2);
 		return (target);
 	}
-	drawPoint(posX, posY) {
-		this.ctx.fillStyle = this.pen.color;
+	drawPoint(posX, posY, color, size) {
+		this.ctx.fillStyle = color;
 		this.ctx.beginPath();
-		this.ctx.arc(posX, posY, this.pen.size / 2, 0, Math.PI * 2);
+		this.ctx.arc(posX, posY, size / 2, 0, Math.PI * 2);
 		this.ctx.fill();
 	}
-	drawLine(posX, posY, nextX, nextY) {
-		this.ctx.strokeStyle = this.pen.color;
-		this.ctx.lineWidth = this.pen.size;
+	drawLine(pos, next, color, size) {
+		this.ctx.strokeStyle = color;
+		this.ctx.lineWidth = size;
 		this.ctx.beginPath();
-		this.ctx.moveTo(posX, posY);
-		this.ctx.lineTo(nextX, nextY);
+		this.ctx.moveTo(pos.x, pos.y);
+		this.ctx.lineTo(next.x, next.y);
 		this.ctx.stroke();
-		this.pen.actions.shift();
+	}
+	getCursor(actions) {
+		for (let i = actions.length - 1; i > 0; i--) {
+			if (actions[i].id === this.actionsCount) {
+				return (i);
+			}
+		}
+		return (this.actionsCount);
 	}
 	tryToDraw() {
-
+		this.pen.actions.sort((obj1, obj2) => obj1.id - obj2.id);
+		let lastId = -1;
+		let cursor = this.getCursor(this.pen.actions);
+		for (let i = cursor; i < this.pen.actions.length; i++) {
+			let action = this.pen.actions[i];
+			if (lastId !== -1) {
+				if (action.id !== lastId + 1) {
+					console.log("bad order")
+					return ;
+				}
+			}
+			lastId = action.id;
+			switch (action.type)  {
+				case "point":
+					this.drawPoint(action.x, action.y, action.color, action.size);
+					this.actionsCount++;
+				break;
+				case "line":
+					if (i + 1 >= this.pen.actions.length) {
+						return ;
+					}
+					const next = this.pen.actions[i + 1];
+					if (next.type !== "line") {
+						break;
+					}
+					let pos = {x: action.x, y: action.y};
+					let nextPos = {x: next.x, y: next.y};
+					this.drawLine(pos, nextPos, action.color, action.size);
+					this.actionsCount++;
+				break;
+				case "stop":
+					this.actionsCount++;
+				break;
+			}
+		}
 	}
 	clear() {
 		this.ctx.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);

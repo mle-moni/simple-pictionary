@@ -33,7 +33,7 @@ class Pictionary {
 		});
 		this.socket.on("flushActions", () => {
 			this.controller.pen.actions.length = 0;
-			this.controller.pen.actions.push({type: "stop", color: "", x: 0, y: 0, id: 0});
+			this.controller.pen.actions.push({type: "stop", color: "", size: 0, x: 0, y: 0, id: 0});
 			this.controller.pen.actionsCount = 0;
 		});
 	}
