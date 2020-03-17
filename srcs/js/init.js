@@ -50,8 +50,8 @@ const toast = siiimpleToast;
 	// sockets events
 	
 	// DEBUG MODE ONLY, A RETIRER !!!
-	window.socket = innerSocket;
-	window.game = game;
+	// window.socket = innerSocket;
+	// window.game = game;
 	
 	innerSocket.on("logAndComeBack", ()=>{
 		sessionStorage.setItem("goTo", location.pathname+location.search);
@@ -102,7 +102,7 @@ const toast = siiimpleToast;
 		console.log("Ready, app is now usable");
 		if (location.search !== "") {
 			const room = location.search.slice(1);
-			socket.emit("joinRoom", room);
+			innerSocket.emit("joinRoom", room);
 		} else {
 			game.showPage(document.getElementById("goToURL"));
 			document.getElementById("goToUrlInput").focus();

@@ -31,6 +31,7 @@ class Room {
 		this.scores = {}; // indexed like this: this.scores[socket.psd] = score;
 		this.users = [];
 		this.chat = [];
+		this.actions = {}; // indexed by actionID
 		this.users.push(socket);
 		this.word = "";
 		rooms[this.namespace] = this;

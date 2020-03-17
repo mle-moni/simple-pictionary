@@ -35,38 +35,25 @@ class DrawController {
 		}, 0);
 		this.pen = {
 			color: "black",
-			size: 5,
-			actions: [{type: "stop", color: "", size: 0, x: 0, y: 0, id: 0}]
+			size: 5, 
 		};
+		this.actions = {};
+		this.actions[0] = {type: "stop", pen: this.pen, x: 0, y: 0, id: 0};
 		this.actionsCount = 0;
+		this.actionsComputed = 0;
 	}
 	setupEvents() {
-		const self = this;
 		this.game.socket.on("wordOK", () => {
 			this.game.toast.success("Word successfully set");
 			this.game.hidePage(document.getElementById("chooseWord"));
 			document.getElementById("chooseInput").value = "";
 		});
-		this.game.socket.on("drawLine", (x, y, pen) => {
-			self.pen = pen;
-			const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
-			self.pen.actions.push({type: "line", color: pen.color, size: pen.size, x, y, id});
-			if (self.pen.actions.length > 30) {
-				self.pen.actions.shift();
-			}
-			self.tryToDraw();
-		});
-		this.game.socket.on("drawPoint", (x, y, pen) => {
-			self.pen = pen;
-			const id = pen.actions[pen.actions.length - 1].id + 1;
-			self.pen.actions.push({type: "point", color: pen.color, size: pen.size, x, y, id});
-			if (self.pen.actions.length > 30) {
-				self.pen.actions.splice(0, 2);
-			}
-			self.tryToDraw();
+		this.game.socket.on("draw", (action) => {
+			this.actions[action.id] = action;
+			this.tryToDraw();
 		});
 		this.game.socket.on("clear", () => {
-			self.clear();
+			this.clear();
 		});
 		this.setupWordChooser();
 		this.settupHover();
@@ -93,10 +80,9 @@ class DrawController {
 		}
 		this.game.canvas.onmouseout = e => {
 			self.hover = false;
-			const pen = self.pen;
-			if (pen.actions[pen.actions.length - 1].type !== "stop") {
-				const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
-				self.pen.actions.push({type: "stop", color: "", size: 0, x: 0, y: 0, id});
+			const lastID = self.actionsCount - 1;
+			if (self.actions[lastID] && self.actions[lastID].type !== "stop") {
+				self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
 			}
 		}
 	}
@@ -119,9 +105,9 @@ class DrawController {
 		document.body.onmouseup = e => {
 			if (e.which === 1) { // left click release
 				self.drawing = false;
-				if (self.pen.actions[self.pen.actions.length - 1].type !== "stop") {
-					const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
-					self.pen.actions.push({type: "stop", color: "", size: 0, x: 0, y: 0, id});
+				const lastID = self.actionsCount - 1;
+				if (self.actions[lastID] && self.actions[lastID].type !== "stop") {
+					self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
 				}
 			}
 		}
@@ -131,12 +117,12 @@ class DrawController {
 		this.game.canvas.onmousemove = e => {
 			if (self.drawing) {
 				const target = self.getTargetCoord(e.offsetX, e.offsetY);
-				self.game.socket.emit("drawLine", target.x, target.y, self.pen);
+				self.game.socket.emit("draw", {type: "line", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
 			}
 		}
 		this.game.canvas.onclick = e => {
 			const target = self.getTargetCoord(e.offsetX, e.offsetY);
-			self.game.socket.emit("drawPoint", target.x, target.y, self.pen);
+			self.game.socket.emit("draw", {type: "point", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
 		}
 	}
 	getTargetCoord(offsetX, offsetY) {
@@ -163,47 +149,32 @@ class DrawController {
 		this.ctx.lineTo(next.x, next.y);
 		this.ctx.stroke();
 	}
-	getCursor(actions) {
-		for (let i = actions.length - 1; i > 0; i--) {
-			if (actions[i].id === this.actionsCount) {
-				return (i);
-			}
-		}
-		return (this.actionsCount);
-	}
 	tryToDraw() {
-		this.pen.actions.sort((obj1, obj2) => obj1.id - obj2.id);
-		let lastId = -1;
-		let cursor = this.getCursor(this.pen.actions);
-		for (let i = cursor; i < this.pen.actions.length; i++) {
-			let action = this.pen.actions[i];
-			if (lastId !== -1) {
-				if (action.id !== lastId + 1) {
-					console.log("bad order")
-					return ;
-				}
-			}
-			lastId = action.id;
+		let action = this.actions[this.actionsComputed];
+		while ((action = this.actions[this.actionsComputed])) {
 			switch (action.type)  {
 				case "point":
-					this.drawPoint(action.x, action.y, action.color, action.size);
-					this.actionsCount++;
+					this.drawPoint(action.x, action.y, action.pen.color, action.pen.size);
+					this.actionsComputed++;
 				break;
 				case "line":
-					if (i + 1 >= this.pen.actions.length) {
+					const next = this.actions[this.actionsComputed + 1];
+					if (!next) {
 						return ;
 					}
-					const next = this.pen.actions[i + 1];
 					if (next.type !== "line") {
+						this.actionsComputed++;
 						break;
 					}
 					let pos = {x: action.x, y: action.y};
 					let nextPos = {x: next.x, y: next.y};
-					this.drawLine(pos, nextPos, action.color, action.size);
-					this.actionsCount++;
+					this.drawPoint(pos.x, pos.y, action.pen.color, action.pen.size / 1.5);
+					this.drawPoint(nextPos.x, nextPos.y, action.pen.color, action.pen.size / 1.5);
+					this.drawLine(pos, nextPos, action.pen.color, action.pen.size);
+					this.actionsComputed++;
 				break;
 				case "stop":
-					this.actionsCount++;
+					this.actionsComputed++;
 				break;
 			}
 		}

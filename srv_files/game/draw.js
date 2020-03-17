@@ -18,23 +18,25 @@ module.exports = {
 	setupEvents
 };
 
-function posTypeOK(x, y) {
-	if (typeof(x) !== "number") {
+function actionOK(action) {
+	let properties = [
+		{name: "type", type: "string"},
+		{name: "pen", type: "object"},
+		{name: "x", type: "number"},
+		{name: "y", type: "number"},
+		{name: "id", type: "number"}
+	];
+	if (!verifObject(action, properties)) {
 		return (false);
 	}
-	if (typeof(y) !== "number") {
+	properties = [
+		{name: "color", type: "string"},
+		{name: "size", type: "number"}
+	];
+	if (!verifObject(action.pen, properties)) {
 		return (false);
 	}
 	return (true);
-}
-
-function penOK(pen) {
-	const properties = [
-		{name: "color", type: "string"},
-		{name: "size", type: "number"},
-		{name: "actions", type: "object"}
-	];
-	return (verifObject(pen, properties));
 }
 
 function verifObject(obj, propArr) {
@@ -50,33 +52,19 @@ function verifObject(obj, propArr) {
 }
 
 function setupEvents(socket, dbo) {
-	socket.on("drawLine", (x, y, pen) => {
+	socket.on("draw", (action) => {
 		if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
 			return ;
 		}
 		if (socket.psd !== socket.gameRoom.master) {
 			return ;
 		}
-		if (!posTypeOK(x, y) || !penOK(pen)) {
+		if (!actionOK(action)) {
 			socket.emit("error!", "What u think u doin :joy:");
 			return ;
 		}
-		socket.emit("drawLine", x, y, pen);
-		socket.to(socket.gameRoom.namespace).emit("drawLine", x, y, pen);
-	});
-	
-	socket.on("drawPoint", (x, y, pen) => {
-		if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
-			return ;
-		}
-		if (socket.psd !== socket.gameRoom.master) {
-			return ;
-		}
-		if (!posTypeOK(x, y) || !penOK(pen)) {
-			socket.emit("error!", "What u think u doin :joy:");
-			return ;
-		}
-		socket.emit("drawPoint", x, y, pen);
-		socket.to(socket.gameRoom.namespace).emit("drawPoint", x, y, pen);
+		socket.gameRoom.actions[action.id] = action;
+		socket.emit("draw", action);
+		socket.to(socket.gameRoom.namespace).emit("draw", action);
 	});
 }
