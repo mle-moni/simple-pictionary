@@ -34,7 +34,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 }
 
 .drawingZone canvas {
-    background-color: rgb(243, 243, 243);
+    background-color: white;
 	width: 100%;
 	height: auto;
 	margin: auto;
