@@ -36,8 +36,9 @@ class DrawController {
 		this.pen = {
 			color: "black",
 			size: 5,
-			pos: []
+			actions: [{type: "stop", color: "", x: 0, y: 0, id: 0}]
 		};
+		this.actionsCount = 0;
 	}
 	setupEvents() {
 		const self = this;
@@ -48,11 +49,16 @@ class DrawController {
 		});
 		this.game.socket.on("drawLine", (x, y, pen) => {
 			self.pen = pen;
-			self.drawLine(x, y);
+			const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
+			self.pen.actions.push({type: "line", color: pen.color, x, y, id});
+			self.tryToDraw();
 		});
 		this.game.socket.on("drawPoint", (x, y, pen) => {
 			self.pen = pen;
-			self.drawPoint(x, y);
+			console.log(pen.actions)
+			const id = pen.actions[pen.actions.length - 1].id + 1;
+			self.pen.actions.push({type: "point", color: pen.color, x, y, id});
+			self.tryToDraw();
 		});
 		this.game.socket.on("clear", () => {
 			self.clear();
@@ -82,6 +88,11 @@ class DrawController {
 		}
 		this.game.canvas.onmouseout = e => {
 			self.hover = false;
+			const pen = self.pen;
+			if (pen.actions[pen.actions.length - 1].type !== "stop") {
+				const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
+				self.pen.actions.push({type: "stop", color: "", x: 0, y: 0, id});
+			}
 		}
 	}
 	settupDrawingEvents() {
@@ -101,9 +112,10 @@ class DrawController {
 			}
 		}
 		document.body.onmouseup = e => {
-			if (e.which === 1) { // left click
+			if (e.which === 1) { // left click release
 				self.drawing = false;
-				self.pen.pos.length = 0;
+				const id = self.pen.actions[self.pen.actions.length - 1].id + 1;
+				self.pen.actions.push({type: "stop", color: "", x: 0, y: 0, id});
 			}
 		}
 		this.game.canvas.oncontextmenu = () => {
@@ -136,18 +148,17 @@ class DrawController {
 		this.ctx.arc(posX, posY, this.pen.size / 2, 0, Math.PI * 2);
 		this.ctx.fill();
 	}
-	drawLine(posX, posY) {
-		this.pen.pos.push({x: posX, y: posY});
-		if (this.pen.pos.length === 1) {
-			return ;
-		}
+	drawLine(posX, posY, nextX, nextY) {
 		this.ctx.strokeStyle = this.pen.color;
 		this.ctx.lineWidth = this.pen.size;
 		this.ctx.beginPath();
-		this.ctx.moveTo(this.pen.pos[0].x, this.pen.pos[0].y);
-		this.ctx.lineTo(this.pen.pos[1].x, this.pen.pos[1].y);
+		this.ctx.moveTo(posX, posY);
+		this.ctx.lineTo(nextX, nextY);
 		this.ctx.stroke();
-		this.pen.pos.shift();
+		this.pen.actions.shift();
+	}
+	tryToDraw() {
+
 	}
 	clear() {
 		this.ctx.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);

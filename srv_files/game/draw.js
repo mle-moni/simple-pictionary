@@ -32,7 +32,7 @@ function penOK(pen) {
 	const properties = [
 		{name: "color", type: "string"},
 		{name: "size", type: "number"},
-		{name: "pos", type: "object"}
+		{name: "actions", type: "object"}
 	];
 	return (verifObject(pen, properties));
 }

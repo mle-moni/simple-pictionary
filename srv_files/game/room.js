@@ -111,6 +111,8 @@ function setupEvents(socket, dbo) {
 			socket.emit("wordOK", word);
 			socket.emit("clear");
 			socket.to(socket.gameRoom.namespace).emit("clear");
+			socket.emit("flushActions");
+			socket.to(socket.gameRoom.namespace).emit("flushActions");
 		}
 	});
 }
