@@ -18,6 +18,16 @@ class DrawController {
 	constructor (game) {
 		this.game = game;
 		this.tools = document.getElementById("toolsPanel");
+		this.tools.hide = () => {
+			this.tools.style.left = -500 + "px";
+			this.tools.style.top = -500 + "px";
+			this.tools.classList.add("transparent");
+		}
+		this.tools.show = (x, y) => {
+			this.tools.style.left = x - (this.tools.offsetWidth / 2) + "px";
+			this.tools.style.top = y + 25  + "px";
+			this.tools.classList.remove("transparent");
+		}
 		this.hover = false;
 		this.drawing = false;
 		setTimeout(()=>{
@@ -84,13 +94,9 @@ class DrawController {
 				self.drawing = true;
 			} else if (e.buttons === 2) {
 				if (new Array(self.tools.classList).join("").match("transparent")) {
-					self.tools.style.left = e.clientX + "px";
-					self.tools.style.top = e.clientY + "px";
-					self.tools.classList.remove("transparent");
+					this.tools.show(e.clientX, e.clientY);
 				} else {
-					self.tools.style.left = -200 + "px";
-					self.tools.style.top = -200 + "px";
-					self.tools.classList.add("transparent");
+					this.tools.hide();
 				}
 			}
 		}
@@ -153,9 +159,7 @@ class DrawController {
 			color.style.backgroundColor = color.getAttribute("color");
 			color.onclick = e => {
 				self.pen.color = color.getAttribute("color");
-				self.tools.style.left = -200 + "px";
-				self.tools.style.top = -200 + "px";
-				self.tools.classList.add("transparent");
+				self.tools.hide();
 			}
 		}
 	}

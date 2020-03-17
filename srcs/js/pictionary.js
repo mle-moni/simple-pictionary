@@ -29,6 +29,7 @@ class Pictionary {
 		this.socket.on("chooseWord", () => {
 			this.showPage(document.getElementById("chooseWord"));
 			document.getElementById("chooseInput").focus();
+			this.controller.tools.hide();
 		});
 	}
 	showPage(page) {
