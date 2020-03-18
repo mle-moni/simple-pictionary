@@ -79,6 +79,7 @@ class Room {
 			this.scores[socket.psd] = 0;
 		}
 		socket.emit("getChat", this.chat);
+		socket.emit("isDrawing", this.master);
 		socket.emit("success!", `Successfully joined ${this.creatorPsd}'s room`);
 	}
 }
@@ -114,6 +115,7 @@ function setupEvents(socket, dbo) {
 			socket.to(socket.gameRoom.namespace).emit("clear");
 			socket.emit("flushActions");
 			socket.to(socket.gameRoom.namespace).emit("flushActions");
+			socket.to(socket.gameRoom.namespace).emit("isDrawing", socket.psd);
 		}
 	});
 }

@@ -43,9 +43,10 @@ class DrawController {
 		this.actionsComputed = 0;
 	}
 	setupEvents() {
-		this.game.socket.on("wordOK", () => {
+		this.game.socket.on("wordOK", (word) => {
 			this.game.toast.success("Word successfully set");
 			this.game.hidePage(document.getElementById("chooseWord"));
+			document.getElementById("whoIsDrawing").innerText = `You word is: ${word}`;
 			document.getElementById("chooseInput").value = "";
 		});
 		this.game.socket.on("draw", (action) => {
@@ -54,6 +55,9 @@ class DrawController {
 		});
 		this.game.socket.on("clear", () => {
 			this.clear();
+		});
+		this.game.socket.on("isDrawing", psd => {
+			document.getElementById("whoIsDrawing").innerText = `${psd} is drawing...`;
 		});
 		this.setupWordChooser();
 		this.settupHover();

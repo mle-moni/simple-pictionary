@@ -16,7 +16,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 
 .tools {
 	display: flex;
-	position: absolute;
+	position: fixed;
 	left: -500px;
 	top: -500px;
 	background-color: rgba(51, 51, 51, 0.6);
