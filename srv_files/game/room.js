@@ -14,7 +14,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
    limitations under the License.
 */
 
-const chat = require("../chat");
+const chat = require("./chat");
 const draw = require("./draw");
 const rooms = {};
 
@@ -32,6 +32,7 @@ class Room {
 		this.users = [];
 		this.chat = [];
 		this.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}}; // indexed by actionID
+		this.redoArray = []; // push action when ctrlZ, pop when ctrlY
 		this.users.push(socket);
 		this.word = "";
 		rooms[this.namespace] = this;

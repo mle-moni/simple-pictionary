@@ -31,7 +31,7 @@ function newMsg(socket, msg) {
 					socket.emit("error!", "????");
 					return ;
 				}
-				const msgToStore = {psd: "BOT", msg: `${socket.psd} found the word!`};
+				const msgToStore = {psd: "BOT", msg: `${socket.psd} found the word! (it was ${socket.gameRoom.word})`};
 				socket.to(socket.gameRoom.namespace).emit("newMsg", msgToStore.psd, msgToStore.msg);
 				socket.gameRoom.chat.push(msgToStore);
 				socket.gameRoom.nextMaster();

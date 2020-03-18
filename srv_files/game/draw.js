@@ -14,6 +14,8 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
    limitations under the License.
 */
 
+const controls = require("./controls");
+
 module.exports = {
 	setupEvents
 };
@@ -63,6 +65,9 @@ function setupEvents(socket, dbo) {
 			socket.emit("error!", "What u think u doin :joy:");
 			return ;
 		}
+		if (action.type !== "stop") {
+			socket.gameRoom.redoArray.length = 0;
+		}
 		socket.gameRoom.actions[action.id] = action;
 		socket.emit("draw", action);
 		socket.to(socket.gameRoom.namespace).emit("draw", action);
@@ -78,4 +83,5 @@ function setupEvents(socket, dbo) {
 		socket.emit("clear");
 		socket.to(socket.gameRoom.namespace).emit("clear");
 	});
+	controls.setupEvents(socket, dbo);
 }

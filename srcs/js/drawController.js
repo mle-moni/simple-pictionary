@@ -40,6 +40,8 @@ class DrawController {
 		this.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
 		this.actionsCount = 1;
 		this.actionsComputed = 0;
+		this.canUseCtrl = true;
+		this.canDrawPoint = true;
 	}
 	setupEvents() {
 		this.game.socket.on("wordOK", (word) => {
@@ -52,17 +54,18 @@ class DrawController {
 			this.actions[action.id] = action;
 			this.tryToDraw();
 		});
-		this.game.socket.on("drawAll", (actions) => {
+		this.game.socket.on("drawAll", (actions, num=0) => {
 			this.clear();
-			this.actionsCount = 0;
+			this.actionsCount = num;
 			this.actionsComputed = 0;
 			this.actions = actions;
 			this.tryToDraw();
+			this.canUseCtrl = true;
 		});
 		this.game.socket.on("clear", () => {
 			this.clear();
 			this.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
-			this.actionsCount = 0;
+			this.actionsCount = 1;
 			this.actionsComputed = 0;
 		});
 		this.game.socket.on("isDrawing", psd => {
@@ -136,12 +139,19 @@ class DrawController {
 		this.game.canvas.onmousemove = e => {
 			if (self.drawing) {
 				const target = self.getTargetCoord(e.offsetX, e.offsetY);
+				this.canDrawPoint = false;
 				self.game.socket.emit("draw", {type: "line", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
 			}
 		}
 		this.game.canvas.onclick = e => {
 			const target = self.getTargetCoord(e.offsetX, e.offsetY);
-			self.game.socket.emit("draw", {type: "point", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
+			if (self.canDrawPoint) {
+				self.game.socket.emit("draw", {type: "point", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
+			} else {
+				self.canDrawPoint = true;
+
+				self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
+			}
 		}
 	}
 	getTargetCoord(offsetX, offsetY) {
@@ -234,12 +244,14 @@ class DrawController {
 			}
 		}
 		document.onkeydown = e => {
-			let Z = 90, Y = 89
-			if (e.ctrlKey) {
+			let Z = 90, Y = 89;
+			if (e.ctrlKey && self.canUseCtrl) {
 				if (e.keyCode === Z) {
-					self.game.socket.emit("ctrlZ");
+					self.game.socket.emit("ctrlZ", this.actionsCount - 1);
+					self.canUseCtrl = false;
 				} else if (e.keyCode === Y) {
-					self.game.socket.emit("ctrlY");
+					self.game.socket.emit("ctrlY", this.actionsCount);
+					self.canUseCtrl = false;
 				}
 			}
 		}
