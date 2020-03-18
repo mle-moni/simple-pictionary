@@ -37,8 +37,7 @@ class DrawController {
 			color: "black",
 			size: 5, 
 		};
-		this.actions = {};
-		this.actions[0] = {type: "stop", pen: this.pen, x: 0, y: 0, id: 0};
+		this.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
 		this.actionsCount = 1;
 		this.actionsComputed = 0;
 	}
@@ -53,8 +52,18 @@ class DrawController {
 			this.actions[action.id] = action;
 			this.tryToDraw();
 		});
+		this.game.socket.on("drawAll", (actions) => {
+			this.clear();
+			this.actionsCount = 0;
+			this.actionsComputed = 0;
+			this.actions = actions;
+			this.tryToDraw();
+		});
 		this.game.socket.on("clear", () => {
 			this.clear();
+			this.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
+			this.actionsCount = 0;
+			this.actionsComputed = 0;
 		});
 		this.game.socket.on("isDrawing", psd => {
 			document.getElementById("whoIsDrawing").innerText = `${psd} is drawing...`;
@@ -221,6 +230,16 @@ class DrawController {
 			} else {
 				if (self.pen.size > 1) {
 					self.pen.size--;
+				}
+			}
+		}
+		document.onkeydown = e => {
+			let Z = 90, Y = 89
+			if (e.ctrlKey) {
+				if (e.keyCode === Z) {
+					self.game.socket.emit("ctrlZ");
+				} else if (e.keyCode === Y) {
+					self.game.socket.emit("ctrlY");
 				}
 			}
 		}

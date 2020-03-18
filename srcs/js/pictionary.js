@@ -32,8 +32,7 @@ class Pictionary {
 			this.controller.tools.hide();
 		});
 		this.socket.on("flushActions", () => {
-			this.controller.actions = {};
-			this.controller.actions[0] = {type: "stop", pen: this.controller.pen, x: 0, y: 0, id: 0};
+			this.controller.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
 			this.controller.actionsComputed = 0;
 			this.controller.actionsCount = 1;
 		});

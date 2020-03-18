@@ -74,6 +74,7 @@ function setupEvents(socket, dbo) {
 		if (socket.psd !== socket.gameRoom.master) {
 			return ;
 		}
+		socket.gameRoom.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
 		socket.emit("clear");
 		socket.to(socket.gameRoom.namespace).emit("clear");
 	});

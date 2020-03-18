@@ -31,7 +31,7 @@ class Room {
 		this.scores = {}; // indexed like this: this.scores[socket.psd] = score;
 		this.users = [];
 		this.chat = [];
-		this.actions = {}; // indexed by actionID
+		this.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}}; // indexed by actionID
 		this.users.push(socket);
 		this.word = "";
 		rooms[this.namespace] = this;
@@ -80,6 +80,7 @@ class Room {
 		}
 		socket.emit("getChat", this.chat);
 		socket.emit("isDrawing", this.master);
+		socket.emit("drawAll", this.actions);
 		socket.emit("success!", `Successfully joined ${this.creatorPsd}'s room`);
 	}
 }
@@ -113,6 +114,7 @@ function setupEvents(socket, dbo) {
 			socket.emit("wordOK", socket.gameRoom.word);
 			socket.emit("clear");
 			socket.to(socket.gameRoom.namespace).emit("clear");
+			socket.gameRoom.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
 			socket.emit("flushActions");
 			socket.to(socket.gameRoom.namespace).emit("flushActions");
 			socket.to(socket.gameRoom.namespace).emit("isDrawing", socket.psd);
