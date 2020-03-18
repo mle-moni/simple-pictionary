@@ -155,6 +155,7 @@ class DrawController {
 		this.ctx.strokeStyle = color;
 		this.ctx.lineWidth = size;
 		this.ctx.beginPath();
+		this.ctx.lineCap = "round";
 		this.ctx.moveTo(pos.x, pos.y);
 		this.ctx.lineTo(next.x, next.y);
 		this.ctx.stroke();
@@ -178,8 +179,6 @@ class DrawController {
 					}
 					let pos = {x: action.x, y: action.y};
 					let nextPos = {x: next.x, y: next.y};
-					this.drawPoint(pos.x, pos.y, action.pen.color, action.pen.size / 1.5);
-					this.drawPoint(nextPos.x, nextPos.y, action.pen.color, action.pen.size / 1.5);
 					this.drawLine(pos, nextPos, action.pen.color, action.pen.size);
 					this.actionsComputed++;
 				break;
@@ -201,6 +200,19 @@ class DrawController {
 				self.pen.color = color.getAttribute("color");
 				self.tools.hide();
 			}
+		}
+		const sizes = document.getElementById("sizes").getElementsByClassName("size");
+		for (let size of sizes) {
+			const elem = size.getElementsByTagName("span")[0];
+			elem.style.width = size.getAttribute("size") * 2 + "px";
+			elem.style.height = size.getAttribute("size") * 2 + "px";
+			size.onclick = e => {
+				self.pen.size = parseInt(size.getAttribute("size"));
+				self.tools.hide();
+			}
+		}
+		document.getElementById("reset").onclick = () => {
+			self.game.socket.emit("clear");
 		}
 	}
 }

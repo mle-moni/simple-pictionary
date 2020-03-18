@@ -67,4 +67,14 @@ function setupEvents(socket, dbo) {
 		socket.emit("draw", action);
 		socket.to(socket.gameRoom.namespace).emit("draw", action);
 	});
+	socket.on("clear", () => {
+		if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
+			return ;
+		}
+		if (socket.psd !== socket.gameRoom.master) {
+			return ;
+		}
+		socket.emit("clear");
+		socket.to(socket.gameRoom.namespace).emit("clear");
+	});
 }

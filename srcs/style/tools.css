@@ -16,6 +16,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 
 .tools {
 	display: flex;
+	flex-direction: column;
 	position: fixed;
 	left: -500px;
 	top: -500px;
@@ -43,4 +44,37 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 	width: 40px;
 	height: 40px;
 	cursor: pointer;
+}
+
+.tools .sizes {
+	margin: auto;
+	display: flex;
+	max-width: 160px;
+	flex-wrap: wrap;
+}
+
+.tools .size {
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	background-color: white;
+	box-shadow: inset 0px 0px 0px 1px black;
+	box-sizing: border-box;
+	display: flex;
+}
+
+.tools .size span {
+	background-color: black;
+	margin: auto;
+	width: 10px;
+	height: 10px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	border-radius: 100px;
+}
+
+.tools .reset {
+	cursor: pointer;
+	font-family: 'Montserrat', sans-serif;
+	text-align: center;
 }
