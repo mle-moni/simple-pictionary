@@ -39,7 +39,7 @@ class DrawController {
 		};
 		this.actions = {};
 		this.actions[0] = {type: "stop", pen: this.pen, x: 0, y: 0, id: 0};
-		this.actionsCount = 0;
+		this.actionsCount = 1;
 		this.actionsComputed = 0;
 	}
 	setupEvents() {
@@ -76,6 +76,12 @@ class DrawController {
 	settupHover() {
 		const self = this;
 		this.game.canvas.onmouseover = e => {
+			if (!self.hover) {
+				const lastID = self.actionsCount - 1;
+				if (self.actions[lastID] && self.actions[lastID].type !== "stop") {
+					self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
+				}
+			} 
 			self.hover = true;
 		}
 		this.game.canvas.onmouseout = e => {
