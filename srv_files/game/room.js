@@ -109,8 +109,8 @@ function setupEvents(socket, dbo) {
 			return ;
 		}
 		if (isOk(word, socket)) {
-			socket.gameRoom.word = word;
-			socket.emit("wordOK", word);
+			socket.gameRoom.word = word.toLowerCase();
+			socket.emit("wordOK", socket.gameRoom.word);
 			socket.emit("clear");
 			socket.to(socket.gameRoom.namespace).emit("clear");
 			socket.emit("flushActions");

@@ -26,7 +26,7 @@ function newMsg(socket, msg) {
 			socket.to(socket.gameRoom.namespace).emit("newMsg", "BOT", msg);
 			socket.gameRoom.chat.push({psd: "BOT", msg});
 		} else {
-			if (msg === socket.gameRoom.word) {
+			if (msg.toLowerCase() === socket.gameRoom.word) {
 				if (socket.psd === socket.gameRoom.master) {
 					socket.emit("error!", "????");
 					return ;
