@@ -141,8 +141,6 @@ class DrawController {
 			x: offsetX / canvas.offsetWidth * canvas.width,
 			y: offsetY / canvas.offsetHeight * canvas.height
 		};
-		target.x += (this.pen.size / 2);
-		target.y += (this.pen.size / 2);
 		return (target);
 	}
 	drawPoint(posX, posY, color, size) {
@@ -213,6 +211,18 @@ class DrawController {
 		}
 		document.getElementById("reset").onclick = () => {
 			self.game.socket.emit("clear");
+			self.tools.hide();
+		}
+		self.game.canvas.onwheel = e => {
+			if (e.deltaY < 0) {
+				if (self.pen.size < 50) {
+					self.pen.size++;
+				}
+			} else {
+				if (self.pen.size > 1) {
+					self.pen.size--;
+				}
+			}
 		}
 	}
 }

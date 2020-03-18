@@ -76,5 +76,13 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 .tools .reset {
 	cursor: pointer;
 	font-family: 'Montserrat', sans-serif;
+	display: flex;
+}
+
+.tools .reset span {
+	margin: auto;
+	padding: 5px;
 	text-align: center;
+	background-color: black;
+	color: red;
 }
