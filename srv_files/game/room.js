@@ -43,11 +43,8 @@ class Room {
 	kick(psd) {
 		for (let i = 0; i < this.users.length; i++) {
 			if (this.users[i].psd === psd) {
-				if (this.master === psd) {
-					this.nextMaster();
-					chat.newMsg(this.users[i], "");
-					this.word = "";
-				}
+				chat.newMsg(this.users[i], "");
+				this.word = "";
 				this.users.splice(i, 1);
 				break ;
 			}
@@ -83,6 +80,10 @@ class Room {
 		socket.emit("isDrawing", this.master);
 		socket.emit("drawAll", this.actions);
 		socket.emit("success!", `Successfully joined ${this.creatorPsd}'s room`);
+		const msg = `${socket.psd} joined the game!`;
+		socket.emit("newMsg", "INFO", msg);
+		socket.to(socket.gameRoom.namespace).emit("newMsg", "INFO", msg);
+		socket.gameRoom.chat.push({psd: "INFO", msg});
 	}
 }
 

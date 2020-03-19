@@ -31,6 +31,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 .drawingZone h1 span {
 	text-align: center;
 	margin: auto;
+	user-select: none;
 }
 
 .drawingZone canvas {
