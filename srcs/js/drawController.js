@@ -116,12 +116,15 @@ class DrawController {
 			}
 			if (e.buttons === 1) { // left click
 				self.drawing = true;
-			} else if (e.buttons === 2) {
+			} else if (e.buttons === 2) { // right click
 				if (new Array(self.tools.classList).join("").match("transparent")) {
 					this.tools.show(e.clientX, e.clientY);
 				} else {
 					this.tools.hide();
 				}
+			} else if (e.buttons === 4) { // scroll click
+				const target = self.getTargetCoord(e.offsetX, e.offsetY);
+				self.game.socket.emit("draw", {type: "fill", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
 			}
 		}
 		document.body.onmouseup = e => {
@@ -199,6 +202,11 @@ class DrawController {
 					this.drawLine(pos, nextPos, action.pen.color, action.pen.size);
 					this.actionsComputed++;
 				break;
+				case "fill":
+					this.ctx.fillStyle = action.pen.color;
+					this.ctx.fillFlood(Math.round(action.x), Math.round(action.y), 20);
+					this.actionsComputed++;
+				break;
 				case "stop":
 					this.actionsComputed++;
 				break;
@@ -207,6 +215,8 @@ class DrawController {
 	}
 	clear() {
 		this.ctx.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+		this.ctx.fillStyle = "rgb(255, 255, 255)";
+		this.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
 	}
 	settupToolsEvents() {
 		const self = this;
