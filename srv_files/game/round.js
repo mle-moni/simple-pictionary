@@ -23,6 +23,7 @@ class Round {
 		this.word = word;
 		this.winners = [];
 		clearTimeout(this.timeout);
+		this.startedAt = Date.now();
 		if (time !== -1) {
 			this.timeout = setTimeout(() => {
 				if (this.gameRoom.users.length === 1) {

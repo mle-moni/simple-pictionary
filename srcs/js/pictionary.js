@@ -22,6 +22,7 @@ class Pictionary {
 		this.controller = new DrawController(this);
 		this.canvas = document.getElementById("canvas");
 		this.setupEvents();
+		this.timer = new Timer(socket);
 	}
 	setupEvents() {
 		this.chat.setupEvents();

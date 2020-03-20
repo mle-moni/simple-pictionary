@@ -14,42 +14,35 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
    limitations under the License.
 */
 
-@import "drawingZone.css";
-@import "chatZone.css";
-@import "niceScrollbar.css";
-@import "wordChooser.css";
-@import "tools.css";
-@import "timer.css";
-
-
-* {
-    padding: 0px;
-	margin: 0px;
-}
-
-html {
-	height: 99.5vh;
-	background-color: rgb(112, 108, 97);
-}
-
-body {
-    height: inherit;
-    display: flex;
-}
-
-.page {
+.timer {
 	display: flex;
-	position: absolute;
+	position: fixed;
+	top: 0px;
 	left: 0px;
-	right: 0px;
-	width: 100vw;
-	height: 100vh;
-	background-color: rgb(112, 108, 97);
-	transition: all 1s;
-	transform: translate3d(0, 0, 0);
-    transition: all 0.3s ease-in-out;
+	width: 100px;
+	height: 100px;
+	background-color: rgb(51, 51, 51);
+	-webkit-border-bottom-right-radius: 50px;
+	-moz-border-radius-bottomright: 50px;
+	border-bottom-right-radius: 50px;
+	z-index: 2;
+	user-select: none;
 }
 
-.notvisible {
-	transform: translateX(-100vw);
+.timer h4 {
+	margin: auto;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 30px;
+}
+
+.timer .white {
+	color: white;
+}
+
+.timer .red {
+	color: red;
+}
+
+.timer .blue {
+	color: #2A4BD7;
 }

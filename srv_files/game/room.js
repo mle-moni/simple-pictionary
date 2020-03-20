@@ -36,13 +36,18 @@ class Room {
 		this.redoArray = []; // push action when ctrlZ, pop when ctrlY
 		this.users.push(socket);
 		this.roundTime = 90;
-		this.chooseTime = 30;
-		this.chooseTimeout = -1;
+		this.choose = {
+			time: 30,
+			timeout: -1,
+			startedAt: -1
+		};
 		this.round = new Round(this, "");
 		rooms[this.namespace] = this;
 		socket.join(this.namespace);
 		socket.emit("chooseWord", this.namespace);
 		socket.emit("success!", `Room successfully created`);
+		socket.emit("newMsg", "INFO", `Use ctrl Z / Y to undo / redo actions`);
+		socket.emit("newMsg", "INFO", `Click on the scroll button to fill an area`);
 	}
 	kick(psd) {
 		for (let i = 0; i < this.users.length; i++) {
@@ -58,7 +63,7 @@ class Room {
 		}
 		if (this.users.length === 0) {
 			clearTimeout(this.round.timeout);
-			clearTimeout(this.chooseTimeout);
+			clearTimeout(this.choose.timeout);
 			delete(rooms[this.namespace]);
 		}
 	}
@@ -71,8 +76,9 @@ class Room {
 				}
 				this.master = nextMaster;
 				this.master.emit("chooseWord");
-				clearTimeout(this.chooseTimeout);
-				this.chooseTimeout = setTimeout(() => {
+				clearTimeout(this.choose.timeout);
+				this.choose.startedAt = Date.now();
+				this.choose.timeout = setTimeout(() => {
 					if (this.users.length === 1) {
 						return ;
 					}
@@ -81,7 +87,7 @@ class Room {
 					this.master.emit("stopChoosing");
 					this.master.to(this.namespace).emit("newMsg", "INFO", msg);
 					this.nextMaster();
-				}, this.chooseTime * 1000);
+				}, this.choose.time * 1000);
 				return (nextMaster);
 			}
 		}
@@ -137,7 +143,7 @@ function setupEvents(socket, dbo) {
 			return ;
 		}
 		if (isOk(word, socket)) {
-			clearTimeout(socket.gameRoom.chooseTimeout);
+			clearTimeout(socket.gameRoom.choose.timeout);
 			socket.gameRoom.round.nextRound(word.toLowerCase(), socket.gameRoom.roundTime);
 			socket.emit("wordOK", socket.gameRoom.round.word);
 			socket.emit("clear");
@@ -147,6 +153,21 @@ function setupEvents(socket, dbo) {
 			socket.to(socket.gameRoom.namespace).emit("flushActions");
 			socket.to(socket.gameRoom.namespace).emit("isDrawing", socket.psd);
 		}
+	});
+
+	socket.on("getTimer", () => {
+		if (!socket.hasOwnProperty("gameRoom")) {
+			return ;
+		}
+		let startedAt, length;
+		if (socket.gameRoom.round.word === "") {
+			startedAt = socket.gameRoom.choose.startedAt;
+			length = socket.gameRoom.choose.time;
+		} else {
+			startedAt = socket.gameRoom.round.startedAt;
+			length = socket.gameRoom.roundTime;
+		}
+		socket.emit("getTimer", startedAt, length);
 	});
 }
 
