@@ -31,7 +31,7 @@ function controlY(socket, actionID, redoStop) {
 	if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
 		return ;
 	}
-	if (socket.psd !== socket.gameRoom.master) {
+	if (socket.psd !== socket.gameRoom.master.psd) {
 		socket.emit("drawAll", socket.gameRoom.actions);
 		return ;
 	}
@@ -68,7 +68,7 @@ function controlZ(socket, actionID, deleteStop) {
 	if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
 		return ;
 	}
-	if (socket.psd !== socket.gameRoom.master) {
+	if (socket.psd !== socket.gameRoom.master.psd) {
 		socket.emit("drawAll", socket.gameRoom.actions);
 		return ;
 	}

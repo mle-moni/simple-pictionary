@@ -16,6 +16,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 
 const chat = require("./chat");
 const draw = require("./draw");
+const Round = require("./round");
 const rooms = {};
 
 module.exports = {
@@ -27,14 +28,17 @@ class Room {
 	constructor (socket, namespace="") {
 		this.namespace = namespace;
 		this.creatorPsd = socket.psd;
-		this.master = socket.psd;
+		this.master = socket;
 		this.scores = {}; // indexed like this: this.scores[socket.psd] = score;
 		this.users = [];
 		this.chat = [];
 		this.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}}; // indexed by actionID
 		this.redoArray = []; // push action when ctrlZ, pop when ctrlY
 		this.users.push(socket);
-		this.word = "";
+		this.roundTime = 90;
+		this.chooseTime = 30;
+		this.chooseTimeout = -1;
+		this.round = new Round(this, "");
 		rooms[this.namespace] = this;
 		socket.join(this.namespace);
 		socket.emit("chooseWord", this.namespace);
@@ -44,22 +48,41 @@ class Room {
 		for (let i = 0; i < this.users.length; i++) {
 			if (this.users[i].psd === psd) {
 				chat.newMsg(this.users[i], "");
-				this.word = "";
+				if (this.master.psd === psd) {
+					this.round.end();
+					this.nextMaster();
+				}
 				this.users.splice(i, 1);
 				break ;
 			}
 		}
 		if (this.users.length === 0) {
+			clearTimeout(this.round.timeout);
+			clearTimeout(this.chooseTimeout);
 			delete(rooms[this.namespace]);
 		}
 	}
-	nextMaster() {
+	nextMaster(justGetSocket=false) {
 		for (let i = 0; i < this.users.length; i++) {
-			if (this.users[i].psd === this.master) {
-				const masterSocket = this.users[(i + 1) % this.users.length];
-				this.master = masterSocket.psd;
-				masterSocket.emit("chooseWord");
-				break ;
+			if (this.users[i].psd === this.master.psd) {
+				const nextMaster = this.users[(i + 1) % this.users.length];
+				if (justGetSocket) {
+					return (nextMaster);
+				}
+				this.master = nextMaster;
+				this.master.emit("chooseWord");
+				clearTimeout(this.chooseTimeout);
+				this.chooseTimeout = setTimeout(() => {
+					if (this.users.length === 1) {
+						return ;
+					}
+					const msg = `${this.master.psd} did not choose a word in time`;
+					this.master.emit("newMsg", "INFO", msg);
+					this.master.emit("stopChoosing");
+					this.master.to(this.namespace).emit("newMsg", "INFO", msg);
+					this.nextMaster();
+				}, this.chooseTime * 1000);
+				return (nextMaster);
 			}
 		}
 	}
@@ -77,7 +100,7 @@ class Room {
 			this.scores[socket.psd] = 0;
 		}
 		socket.emit("getChat", this.chat);
-		socket.emit("isDrawing", this.master);
+		socket.emit("isDrawing", this.master.psd);
 		socket.emit("drawAll", this.actions);
 		socket.emit("success!", `Successfully joined ${this.creatorPsd}'s room`);
 		const msg = `${socket.psd} joined the game!`;
@@ -112,11 +135,12 @@ function setupEvents(socket, dbo) {
 			return ;
 		}
 		if (isOk(word, socket)) {
-			socket.gameRoom.word = word.toLowerCase();
-			socket.emit("wordOK", socket.gameRoom.word);
+			clearTimeout(socket.gameRoom.chooseTimeout);
+			socket.gameRoom.round.nextRound(word.toLowerCase(), socket.gameRoom.roundTime);
+			socket.emit("wordOK", socket.gameRoom.round.word);
 			socket.emit("clear");
 			socket.to(socket.gameRoom.namespace).emit("clear");
-			socket.gameRoom.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
+			socket.gameRoom.actions = {0: {type: "stop", pen: {color: "black", size: 5}, x: 0, y: 0, id: 0}};
 			socket.emit("flushActions");
 			socket.to(socket.gameRoom.namespace).emit("flushActions");
 			socket.to(socket.gameRoom.namespace).emit("isDrawing", socket.psd);
@@ -129,9 +153,9 @@ function isOk(word, socket) {
 	if (word === "") {
 		ok = false;
 	}
-	if (socket.psd !== socket.gameRoom.master) {
+	if (socket.psd !== socket.gameRoom.master.psd) {
 		ok = false;
-		socket.emit("error!", `You (${socket.psd}) are not the master (${socket.gameRoom.master})`);
+		socket.emit("error!", `You (${socket.psd}) are not the master (${socket.gameRoom.master.psd})`);
 	}
 	return (ok);
 }

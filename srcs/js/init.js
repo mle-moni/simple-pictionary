@@ -117,8 +117,4 @@ const toast = siiimpleToast;
 			automaticReconnection(connectObj, innerSocket);
 		}, 500);
 	});
-	
-	innerSocket.on("log", (txt)=>{
-		console.log(txt)
-	});
 })();

@@ -58,7 +58,7 @@ function setupEvents(socket, dbo) {
 		if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
 			return ;
 		}
-		if (socket.psd !== socket.gameRoom.master) {
+		if (socket.psd !== socket.gameRoom.master.psd) {
 			return ;
 		}
 		if (!actionOK(action)) {
@@ -76,7 +76,7 @@ function setupEvents(socket, dbo) {
 		if (!socket.hasOwnProperty("psd") || !socket.hasOwnProperty("gameRoom")) {
 			return ;
 		}
-		if (socket.psd !== socket.gameRoom.master) {
+		if (socket.psd !== socket.gameRoom.master.psd) {
 			return ;
 		}
 		socket.gameRoom.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};

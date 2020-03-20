@@ -22,26 +22,20 @@ module.exports = {
 function newMsg(socket, msg) {
     if (socket.hasOwnProperty("gameRoom")) {
 		if (msg === "") {
-			if (socket.gameRoom.master === socket.psd) {
-				socket.gameRoom.nextMaster();
-				msg = `${socket.psd} left, the word was ${socket.gameRoom.word || "not defined yet"}`;
-			} else {
-				msg = `${socket.psd} left.`;
-			}
+			msg = `${socket.psd} left.`;
 			socket.to(socket.gameRoom.namespace).emit("newMsg", "INFO", msg);
 			socket.gameRoom.chat.push({psd: "INFO", msg});
 		} else {
-			if (msg.toLowerCase() === socket.gameRoom.word) {
-				if (socket.psd === socket.gameRoom.master) {
-					socket.emit("error!", "????");
+			if (msg.toLowerCase() === socket.gameRoom.round.word) {
+				if (socket.psd === socket.gameRoom.master.psd) {
+					socket.emit("error!", "Don't do that hahaha");
 					return ;
 				}
-				const msgToStore = {psd: "INFO", msg: `${socket.psd} found the word! (it was ${socket.gameRoom.word})`};
+				const msgToStore = {psd: "INFO", msg: `${socket.psd} found the word!`};
 				socket.to(socket.gameRoom.namespace).emit("newMsg", msgToStore.psd, msgToStore.msg);
 				socket.gameRoom.chat.push(msgToStore);
-				socket.gameRoom.nextMaster();
-				socket.gameRoom.word = "";
 				socket.emit("newMsg", msgToStore.psd, msgToStore.msg);
+				socket.gameRoom.round.newWinner(socket);
 				return ;
 			}
 			socket.to(socket.gameRoom.namespace).emit("newMsg", socket.psd, msg);

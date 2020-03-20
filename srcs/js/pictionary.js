@@ -31,6 +31,9 @@ class Pictionary {
 			document.getElementById("chooseInput").focus();
 			this.controller.tools.hide();
 		});
+		this.socket.on("stopChoosing", () => {
+			this.hidePage(document.getElementById("chooseWord"));
+		});
 		this.socket.on("flushActions", () => {
 			this.controller.actions = {0: {type: "stop", pen: this.pen, x: 0, y: 0, id: 0}};
 			this.controller.actionsComputed = 0;
