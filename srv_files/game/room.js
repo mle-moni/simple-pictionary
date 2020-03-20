@@ -55,7 +55,6 @@ class Room {
 				chat.newMsg(this.users[i], "");
 				if (this.master.psd === psd) {
 					this.round.end();
-					this.nextMaster();
 				}
 				this.users.splice(i, 1);
 				break ;
@@ -80,7 +79,7 @@ class Room {
 				this.choose.startedAt = Date.now();
 				this.choose.timeout = setTimeout(() => {
 					if (this.users.length === 1) {
-						return ;
+						return null;
 					}
 					const msg = `${this.master.psd} did not choose a word in time`;
 					this.master.emit("newMsg", "INFO", msg);

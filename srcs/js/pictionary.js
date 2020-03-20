@@ -40,6 +40,7 @@ class Pictionary {
 			this.controller.actionsComputed = 0;
 			this.controller.actionsCount = 1;
 		});
+		setScoreDisplayer(this);
 	}
 	showPage(page) {
 		page.classList.remove("notvisible");

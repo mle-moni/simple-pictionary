@@ -30,7 +30,6 @@ class Round {
 					return ;
 				}
 				this.end();
-				this.gameRoom.nextMaster();
 			}, time * 1000);
 		} else {
 			this.timeout = -1;
@@ -48,11 +47,47 @@ class Round {
 		this.winners.push(socket);
 		if (this.winners.length === this.gameRoom.users.length - 1) {
 			socket.gameRoom.round.end();
-			socket.gameRoom.nextMaster();
 		}
 	}
+	addScore(user, score) {
+		if (this.gameRoom.scores[user]) {
+			this.gameRoom.scores[user] += score;
+		} else {
+			this.gameRoom.scores[user] = score;
+		}
+	}
+	writeScores() {
+		let total = 0;
+		for (let i = 0; i < this.winners.length; i++) {
+			switch (i) {
+				case 0:
+					this.addScore(this.winners[i].psd, 5);
+					total += 5;
+				break;
+				case 1:
+					this.addScore(this.winners[i].psd, 3);
+					total += 3;
+				break;
+				case 2:
+					this.addScore(this.winners[i].psd, 2);
+					total += 2;
+				break;
+				default:
+					this.addScore(this.winners[i].psd, 1);
+					total += 1;
+				break;
+			}
+		}
+		const drawerScore = Math.ceil(total / 2);
+		this.addScore(this.gameRoom.master.psd, drawerScore);
+		return (drawerScore);
+	}
 	end() {
-		// TODO: winners earnings of points
+		const drawerScore = this.writeScores();
+		const scores = this.gameRoom.scores;
+		const roundWinners = this.winners.map(socket => socket.psd);
+		const drawerObj = {psd: this.gameRoom.master.psd, score: drawerScore};
+		this.gameRoom.nextMaster(true).to(this.gameRoom.namespace).emit("displayScores", scores, roundWinners, drawerObj);
 		const msg = `End of the round, the word was ${this.word || "not defined yet"}`;
 		this.gameRoom.master.emit("newMsg", "INFO", msg);
 		this.gameRoom.master.to(this.gameRoom.namespace).emit("newMsg", "INFO", msg);
@@ -60,6 +95,7 @@ class Round {
 		this.word = "";
 		this.winners.length = 0;
 		clearTimeout(this.timeout);
+		this.gameRoom.nextMaster();
 	}
 }
 

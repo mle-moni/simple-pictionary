@@ -20,6 +20,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 @import "wordChooser.css";
 @import "tools.css";
 @import "timer.css";
+@import "scores.css";
 
 
 * {
@@ -48,6 +49,10 @@ body {
 	transition: all 1s;
 	transform: translate3d(0, 0, 0);
     transition: all 0.3s ease-in-out;
+}
+
+.non-opaque {
+	background-color: rgba(112, 108, 97, 0.692);
 }
 
 .notvisible {

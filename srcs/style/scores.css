@@ -1,0 +1,78 @@
+/*
+Copyright 2020 LE MONIES DE SAGAZAN Mayeul
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+.scoresContainer {
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+}
+
+.scores {
+	display: flex;
+	margin: auto;
+	flex-direction: column;
+	max-height: 70vh;
+	overflow: auto;
+	background-color: rgb(112, 108, 97);
+	padding: 30px;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
+}
+
+.scores .score {
+	min-width: 400px;
+	font-family: 'Montserrat', sans-serif;
+	font-size: 30px;
+	display: grid;
+	grid-template-columns: 10px auto 10px 200px;
+}
+
+.scores .score p {
+	display: inline;
+}
+
+.scores .score .green {
+	color: #81C57A;
+}
+
+.scores .score .actualScore {
+	text-align: right;
+	padding-right: 10px;
+}
+
+.scores .score .psd {
+	/* overflow-wrap: break-word; */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 200px;
+	padding-left: 50px;
+}
+
+.scoresContainer .hideScores {
+	margin: auto;
+	margin-top: 20px;
+	font-family: 'Inconsolata', monospace;
+	padding: 5px;
+	cursor: pointer;
+	display: inline-block;
+	background-color: black;
+	color: white;
+	font-size: 30px;
+	-webkit-border-radius: 50px;
+	-moz-border-radius: 50px;
+	border-radius: 50px;
+}
