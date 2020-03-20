@@ -36,6 +36,14 @@ class Round {
 			this.timeout = -1;
 		}
 	}
+	alreadyWon(socket) {
+		for (let i = 0; i < this.winners.length; i++) {
+			if (this.winners[i].psd === socket.psd) {
+				return (true);
+			}
+		}
+		return (false);
+	}
 	newWinner(socket) {
 		this.winners.push(socket);
 		if (this.winners.length === this.gameRoom.users.length - 1) {

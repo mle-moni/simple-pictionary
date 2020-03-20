@@ -26,6 +26,10 @@ function newMsg(socket, msg) {
 			socket.to(socket.gameRoom.namespace).emit("newMsg", "INFO", msg);
 			socket.gameRoom.chat.push({psd: "INFO", msg});
 		} else {
+			if (socket.gameRoom.round.alreadyWon(socket)) {
+				socket.emit("success!", "You have already found the word, now wait the others players :)");
+				return ;
+			}
 			if (msg.toLowerCase() === socket.gameRoom.round.word) {
 				if (socket.psd === socket.gameRoom.master.psd) {
 					socket.emit("error!", "Don't do that hahaha");

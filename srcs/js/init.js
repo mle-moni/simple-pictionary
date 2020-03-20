@@ -50,7 +50,7 @@ const toast = siiimpleToast;
 	// sockets events
 	
 	// DEBUG MODE ONLY, A RETIRER !!!
-	// window.socket = innerSocket;
+	window.socket = innerSocket;
 	// window.game = game;
 	
 	innerSocket.on("logAndComeBack", ()=>{
