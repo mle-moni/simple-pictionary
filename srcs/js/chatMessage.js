@@ -18,7 +18,7 @@ class ChatMessage {
 	constructor (user, msg) {
 		this.elem = document.createElement("div");
 		const txtUser = this.createTxtUser(user);
-		const txtMsg = this.createTxtMsg(msg)
+		const txtMsg = this.createTxtMsg(user, msg)
 		this.elem.appendChild(txtUser);
 		this.elem.innerHTML += " : ";
 		this.elem.appendChild(txtMsg);
@@ -29,10 +29,13 @@ class ChatMessage {
 		txtUser.classList.add("chatTxtUser");
 		return (txtUser);
 	}
-	createTxtMsg(msg) {
+	createTxtMsg(user, msg) {
 		const txtMsg = document.createElement("p");
 		txtMsg.innerText = msg;
 		txtMsg.classList.add("chatTxtMsg");
+		if (user === "INFO") {
+			txtMsg.classList.add("blueTxt");
+		}
 		return (txtMsg);
 	}
 }

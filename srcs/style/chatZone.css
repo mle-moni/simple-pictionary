@@ -53,3 +53,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 	overflow-wrap: break-word;
 	color: rgb(194, 170, 140);
 }
+
+.chatZone .chatMessages .blueTxt {
+	color: #2A4BD7;
+}

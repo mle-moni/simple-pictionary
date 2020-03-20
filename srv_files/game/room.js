@@ -107,6 +107,8 @@ class Room {
 		socket.emit("newMsg", "INFO", msg);
 		socket.to(socket.gameRoom.namespace).emit("newMsg", "INFO", msg);
 		socket.gameRoom.chat.push({psd: "INFO", msg});
+		socket.emit("newMsg", "INFO", `Use ctrl Z / Y to undo / redo actions`);
+		socket.emit("newMsg", "INFO", `Click on the scroll button to fill an area`);
 	}
 }
 
