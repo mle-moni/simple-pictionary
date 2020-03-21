@@ -257,10 +257,26 @@ class DrawController {
 				}
 			}
 		}
-		const Z = 90, Y = 89, SHIFT = 16;
+		const Z = 90, Y = 89, SHIFT = 16, S = 83;
 		document.onkeydown = e => {
 			if (e.keyCode === SHIFT) { // SHIFT key is down, we will draw straight lines instead of points
 				self.straight = true;
+			}
+			if (e.ctrlKey && e.keyCode === S) {
+				e.preventDefault();
+				const data = self.game.canvas.toDataURL("image/png");
+				const link = document.createElement("a");
+					link.download = "image.png";
+					link.href = data;
+					link.innerText = "Click to download image!";
+				const msg = new ChatMessage("INFO", "").elem;
+					msg.getElementsByClassName("chatTxtMsg")[0].appendChild(link);
+				self.game.chat.chatBody.appendChild(msg);
+				self.game.chat.chatBody.scrollTo({
+					top: 9999999,
+					left: 0,
+					behavior: 'smooth'
+				});
 			}
 			if (e.ctrlKey && self.canUseCtrl) {
 				if (e.keyCode === Z) {
