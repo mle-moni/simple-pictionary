@@ -32,17 +32,28 @@ function displayScore(scores, roundWinners, drawerObj) {
 	const scoresArr = [];
 	for (key in scores) {
 		scoresArr.push({psd: key, score: scores[key], gain: 0});
-		scores[key] = scoresArr.length - 1;
 	}
 	scoresArr.sort((obj1, obj2) => obj2.score - obj1.score);
+	let index;
 	for (let i = 0; i < roundWinners.length; i++) {
-		scoresArr[scores[roundWinners[i]]].gain = getScoreByIndex(i);
+		index = getIndex(roundWinners[i], scoresArr);
+		scoresArr[index].gain = getScoreByIndex(i);
 	}
-	scoresArr[scores[drawerObj.psd]].gain = drawerObj.score;
+	index = getIndex(drawerObj.psd, scoresArr);
+	scoresArr[index].gain = drawerObj.score;
 	for (let i = 0; i < scoresArr.length; i++) {
 		const scoreElem = getNewScoreElem(i + 1, scoresArr[i].psd, scoresArr[i].score, scoresArr[i].gain);
 		scoresNode.appendChild(scoreElem);
 	}
+}
+
+function getIndex(psd, scoresArr) {
+	for (let i = 0; i < scoresArr.length; i++) {
+		if (scoresArr[i].psd === psd) {
+			return (i);
+		}
+	}
+	return (-1);
 }
 
 function getNewScoreElem(rankNum, psdStr, scoreNum, gainNum) {
