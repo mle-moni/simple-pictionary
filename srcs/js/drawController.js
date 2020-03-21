@@ -42,6 +42,7 @@ class DrawController {
 		this.actionsComputed = 0;
 		this.canUseCtrl = true;
 		this.canDrawPoint = true;
+		this.straight = false;
 	}
 	setupEvents() {
 		this.game.socket.on("wordOK", (word) => {
@@ -94,7 +95,7 @@ class DrawController {
 		this.game.canvas.onmouseover = e => {
 			if (!self.hover) {
 				const lastID = self.actionsCount - 1;
-				if (self.actions[lastID] && self.actions[lastID].type !== "stop") {
+				if (!self.straight && self.actions[lastID] && self.actions[lastID].type !== "stop") {
 					self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
 				}
 			} 
@@ -103,7 +104,7 @@ class DrawController {
 		this.game.canvas.onmouseout = e => {
 			self.hover = false;
 			const lastID = self.actionsCount - 1;
-			if (self.actions[lastID] && self.actions[lastID].type !== "stop") {
+			if (!self.straight && self.actions[lastID] && self.actions[lastID].type !== "stop") {
 				self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
 			}
 		}
@@ -131,7 +132,7 @@ class DrawController {
 			if (e.which === 1) { // left click release
 				self.drawing = false;
 				const lastID = self.actionsCount - 1;
-				if (self.actions[lastID] && self.actions[lastID].type !== "stop") {
+				if (!self.straight && self.actions[lastID] && self.actions[lastID].type !== "stop") {
 					self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
 				}
 			}
@@ -140,7 +141,7 @@ class DrawController {
 			return (false);
 		}
 		this.game.canvas.onmousemove = e => {
-			if (self.drawing) {
+			if (self.drawing && !self.straight) {
 				const target = self.getTargetCoord(e.offsetX, e.offsetY);
 				this.canDrawPoint = false;
 				self.game.socket.emit("draw", {type: "line", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
@@ -148,11 +149,14 @@ class DrawController {
 		}
 		this.game.canvas.onclick = e => {
 			const target = self.getTargetCoord(e.offsetX, e.offsetY);
+			if (self.straight) {
+				self.game.socket.emit("draw", {type: "line", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
+				return ;
+			}
 			if (self.canDrawPoint) {
 				self.game.socket.emit("draw", {type: "point", pen: self.pen, x: target.x, y: target.y, id: self.actionsCount++});
 			} else {
 				self.canDrawPoint = true;
-
 				self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
 			}
 		}
@@ -253,8 +257,11 @@ class DrawController {
 				}
 			}
 		}
+		const Z = 90, Y = 89, SHIFT = 16;
 		document.onkeydown = e => {
-			let Z = 90, Y = 89;
+			if (e.keyCode === SHIFT) { // SHIFT key is down, we will draw straight lines instead of points
+				self.straight = true;
+			}
 			if (e.ctrlKey && self.canUseCtrl) {
 				if (e.keyCode === Z) {
 					self.game.socket.emit("ctrlZ", this.actionsCount - 1);
@@ -263,6 +270,13 @@ class DrawController {
 					self.game.socket.emit("ctrlY", this.actionsCount);
 					self.canUseCtrl = false;
 				}
+			}
+		}
+
+		document.onkeyup = e => {
+			if (e.keyCode === SHIFT) {
+				self.straight = false;
+				self.game.socket.emit("draw", {type: "stop", pen: self.pen, x: 0, y: 0, id: self.actionsCount++});
 			}
 		}
 	}

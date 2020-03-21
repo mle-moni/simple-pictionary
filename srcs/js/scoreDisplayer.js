@@ -21,7 +21,7 @@ Copyright 2020 LE MONIES DE SAGAZAN Mayeul
 		<p class="rank">1:</p>
 		<p class="psd">Redz</p>
 		<p>→</p>
-		<p class="actualScore">1392</p>
+		<p class="actualScore">92 (<span>90 +2</span>)</p>
 	</div>
 
 */

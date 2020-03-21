@@ -48,6 +48,7 @@ class Room {
 		socket.emit("success!", `Room successfully created`);
 		socket.emit("newMsg", "INFO", `Use ctrl Z / Y to undo / redo actions`);
 		socket.emit("newMsg", "INFO", `Click on the scroll button to fill an area`);
+		socket.emit("newMsg", "INFO", `Hold the SHIFT key and click to create straight lines`);
 	}
 	kick(psd) {
 		for (let i = 0; i < this.users.length; i++) {
@@ -114,6 +115,7 @@ class Room {
 		socket.gameRoom.chat.push({psd: "INFO", msg});
 		socket.emit("newMsg", "INFO", `Use ctrl Z / Y to undo / redo actions`);
 		socket.emit("newMsg", "INFO", `Click on the scroll button to fill an area`);
+		socket.emit("newMsg", "INFO", `Hold the SHIFT key and click to create straight lines`);
 	}
 }
 
