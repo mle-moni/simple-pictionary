@@ -15,7 +15,7 @@
   "dependencies": {
     "fs": "0.0.1-security",
     "http": "0.0.0",
-    "mongodb": "^3.5.5",
+    "mongodb": "^3.7.4",
     "path": "^0.12.7",
     "saslprep": "^1.0.3",
     "socket.io": "^2.4.0"
